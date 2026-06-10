@@ -82,6 +82,62 @@ export async function fetchOEmbed(youtubeId: string): Promise<OEmbedData> {
 
 // ─── YouTube Data API v3 enrichment ─────────────────────────────────────────
 
+export type EnrichmentResult =
+  | { status: "ok"; data: ApiEnrichmentData }
+  | { status: "quota_exceeded" }
+  | { status: "not_found" }   // video deleted / private / unavailable
+  | { status: "no_key" };
+
+/**
+ * Typed variant used by the background enrichment cron.
+ * Distinguishes quota exhaustion from "video not found" so the caller can
+ * stop retrying deleted videos rather than burning quota forever.
+ */
+export async function fetchApiEnrichmentResult(
+  youtubeId: string
+): Promise<EnrichmentResult> {
+  const apiKey = process.env.YOUTUBE_API_KEY;
+  if (!apiKey) return { status: "no_key" };
+
+  const url =
+    `https://www.googleapis.com/youtube/v3/videos` +
+    `?id=${youtubeId}&part=snippet,contentDetails,statistics&key=${apiKey}`;
+
+  const res = await fetch(url, { cache: "no-store" });
+
+  if (!res.ok) {
+    if (res.status === 403) {
+      const body = await res.json().catch(() => ({}));
+      const reason: string = body?.error?.errors?.[0]?.reason ?? "";
+      if (
+        reason === "quotaExceeded" ||
+        reason === "dailyLimitExceeded" ||
+        reason === "rateLimitExceeded"
+      ) {
+        return { status: "quota_exceeded" };
+      }
+    }
+    throw new Error(`YouTube API error: ${res.status}`);
+  }
+
+  const data = await res.json();
+  const item = data.items?.[0];
+  if (!item) return { status: "not_found" };
+
+  return {
+    status: "ok",
+    data: {
+      channelId: item.snippet.channelId,
+      channelName: item.snippet.channelTitle,
+      description: item.snippet.description,
+      duration: parseDuration(item.contentDetails.duration),
+      publishedAt: item.snippet.publishedAt,
+      viewCount: parseInt(item.statistics.viewCount ?? "0", 10),
+      tags: item.snippet.tags ?? [],
+    },
+  };
+}
+
 /**
  * Returns enrichment data, or null if:
  *  - No API key is configured
