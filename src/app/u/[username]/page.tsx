@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
+import FollowButton from "@/components/FollowButton";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -44,8 +45,12 @@ export default async function ProfilePage({
 
   if (!profileUser) notFound();
 
-  // Stats
-  const [totalWatched, totalRatings, thisYearCount] = await Promise.all([
+  const session = await auth();
+  const currentUserId = (session?.user as { id?: string })?.id;
+  const isOwn = currentUserId === profileUser.id;
+
+  // Stats + social counts + follow state
+  const [totalWatched, totalRatings, thisYearCount, followerCount, followingCount, isFollowing, userLists] = await Promise.all([
     prisma.diaryEntry.count({ where: { userId: profileUser.id } }),
     prisma.diaryEntry.count({
       where: { userId: profileUser.id, rating: { not: null } },
@@ -54,6 +59,26 @@ export default async function ProfilePage({
       where: {
         userId: profileUser.id,
         watchedDate: { gte: new Date(`${new Date().getFullYear()}-01-01`) },
+      },
+    }),
+    prisma.follow.count({ where: { followingId: profileUser.id } }),
+    prisma.follow.count({ where: { followerId: profileUser.id } }),
+    currentUserId && !isOwn
+      ? prisma.follow.findUnique({
+          where: { followerId_followingId: { followerId: currentUserId, followingId: profileUser.id } },
+        }).then(Boolean)
+      : Promise.resolve(false),
+    prisma.list.findMany({
+      where: { userId: profileUser.id, ...(isOwn ? {} : { isPublic: true }) },
+      orderBy: { updatedAt: "desc" },
+      take: 6,
+      include: {
+        items: {
+          take: 4,
+          orderBy: { position: "asc" },
+          include: { video: { select: { thumbnailUrl: true, title: true } } },
+        },
+        _count: { select: { items: true } },
       },
     }),
   ]);
@@ -65,10 +90,6 @@ export default async function ProfilePage({
     take: 8,
     include: { video: true },
   });
-
-  const session = await auth();
-  const isOwn =
-    (session?.user as { id?: string })?.id === profileUser.id;
 
   return (
     <div className="min-h-screen">
@@ -99,13 +120,19 @@ export default async function ProfilePage({
               </p>
             )}
           </div>
-          {isOwn && (
+          {isOwn ? (
             <Link
               href="/settings"
               className="text-xs text-[var(--text-muted)] border border-[var(--border)] rounded px-3 py-1.5 hover:text-white hover:border-white/30 transition-colors flex-shrink-0"
             >
               Edit profile
             </Link>
+          ) : (
+            <FollowButton
+              targetUserId={profileUser.id}
+              initialFollowing={isFollowing as boolean}
+              isLoggedIn={!!currentUserId}
+            />
           )}
         </div>
 
@@ -115,6 +142,8 @@ export default async function ProfilePage({
             { label: "Videos", value: totalWatched },
             { label: "This year", value: thisYearCount },
             { label: "Ratings", value: totalRatings },
+            { label: "Followers", value: followerCount },
+            { label: "Following", value: followingCount },
           ].map(({ label, value }) => (
             <div key={label} className="text-center">
               <div className="text-white font-bold text-lg leading-none">
@@ -243,6 +272,59 @@ export default async function ProfilePage({
             </div>
           )}
         </section>
+
+        {/* ── Lists ── */}
+        {userLists.length > 0 && (
+          <section>
+            <div className="flex items-baseline justify-between mb-3">
+              <h2 className="text-xs font-bold uppercase tracking-widest text-[var(--text-muted)]">
+                Lists
+              </h2>
+              <Link
+                href="/lists"
+                className="text-xs text-[var(--accent-green)] hover:underline"
+              >
+                All lists →
+              </Link>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              {userLists.map((list) => (
+                <Link
+                  key={list.id}
+                  href={`/lists/${list.id}`}
+                  className="bg-[var(--bg-card)] rounded-lg p-3 hover:bg-[var(--bg-secondary)] transition-colors group space-y-2"
+                >
+                  {list.items.length > 0 && (
+                    <div className="flex gap-0.5 overflow-hidden rounded">
+                      {list.items.map(({ video }, i) =>
+                        video.thumbnailUrl ? (
+                          <div key={i} className="relative flex-1 aspect-video min-w-0">
+                            <Image
+                              src={video.thumbnailUrl}
+                              alt={video.title}
+                              fill
+                              className="object-cover"
+                              sizes="8vw"
+                            />
+                          </div>
+                        ) : null
+                      )}
+                    </div>
+                  )}
+                  <div>
+                    <p className="text-sm font-medium line-clamp-1 group-hover:text-[var(--accent-green)] transition-colors">
+                      {list.name}
+                    </p>
+                    <p className="text-xs text-[var(--text-dim)] mt-0.5">
+                      {list._count.items} {list._count.items === 1 ? "video" : "videos"}
+                      {!list.isPublic && " · Private"}
+                    </p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
       </div>
     </div>
   );

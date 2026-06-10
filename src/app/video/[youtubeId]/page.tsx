@@ -6,6 +6,8 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import VideoEmbed from "@/components/VideoEmbed";
 import WatchlistButton from "@/components/WatchlistButton";
+import LikeButton from "@/components/LikeButton";
+import CommentSection from "@/components/CommentSection";
 
 // ─── Metadata ────────────────────────────────────────────────────────────────
 
@@ -71,6 +73,11 @@ export default async function VideoPage({
       orderBy: [{ watchedDate: "desc" }, { createdAt: "desc" }],
       include: {
         user: { select: { id: true, name: true, username: true, image: true } },
+        likes: { select: { userId: true } },
+        comments: {
+          orderBy: { createdAt: "asc" },
+          include: { user: { select: { id: true, name: true, username: true, image: true } } },
+        },
       },
     }),
     auth(),
@@ -311,6 +318,20 @@ export default async function VideoPage({
                   <p className="text-sm text-[var(--text-dim)] leading-relaxed whitespace-pre-line pl-11">
                     {entry.review}
                   </p>
+                  <div className="pl-11 flex items-center gap-4 mt-2">
+                    <LikeButton
+                      diaryEntryId={entry.id}
+                      initialLiked={entry.likes.some((l) => l.userId === currentUserId)}
+                      initialCount={entry.likes.length}
+                      isLoggedIn={!!currentUserId}
+                    />
+                  </div>
+                  <CommentSection
+                    diaryEntryId={entry.id}
+                    initialComments={entry.comments}
+                    currentUserId={currentUserId ?? null}
+                    isLoggedIn={!!currentUserId}
+                  />
                 </div>
               ))}
             </div>

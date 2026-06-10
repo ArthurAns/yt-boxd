@@ -1,0 +1,212 @@
+import { redirect } from "next/navigation";
+import Link from "next/link";
+import Image from "next/image";
+import type { Metadata } from "next";
+import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import LikeButton from "@/components/LikeButton";
+
+export const metadata: Metadata = { title: "Feed" };
+
+function StarDisplay({ rating }: { rating: number | null }) {
+  if (!rating) return null;
+  const full = Math.floor(rating);
+  const half = rating % 1 >= 0.5;
+  return (
+    <span className="text-[var(--star-color)] text-xs tracking-tight">
+      {"★".repeat(full)}
+      {half ? "½" : ""}
+    </span>
+  );
+}
+
+function formatDate(d: Date) {
+  return new Date(d).toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+}
+
+export default async function FeedPage() {
+  const session = await auth();
+  const currentUserId = (session?.user as { id?: string } | undefined)?.id;
+  if (!currentUserId) redirect("/login?callbackUrl=/feed");
+
+  // Who the current user follows
+  const follows = await prisma.follow.findMany({
+    where: { followerId: currentUserId },
+    select: { followingId: true },
+  });
+  const followingIds = follows.map((f) => f.followingId);
+
+  if (followingIds.length === 0) {
+    return (
+      <div className="min-h-screen">
+        <div className="bg-[var(--bg-secondary)] border-b border-[var(--border)]">
+          <div className="mx-auto max-w-2xl px-4 py-6">
+            <h1 className="text-2xl font-bold">Feed</h1>
+          </div>
+        </div>
+        <div className="mx-auto max-w-2xl px-4 py-20 text-center space-y-4">
+          <p className="text-[var(--text-muted)]">Your feed is empty.</p>
+          <p className="text-sm text-[var(--text-dim)]">
+            Follow some members to see their activity here.
+          </p>
+          <Link
+            href="/members"
+            className="inline-block text-[var(--accent-green)] hover:underline text-sm"
+          >
+            Find people to follow →
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  const entries = await prisma.diaryEntry.findMany({
+    where: { userId: { in: followingIds } },
+    orderBy: { createdAt: "desc" },
+    take: 40,
+    include: {
+      user: { select: { id: true, name: true, username: true, image: true } },
+      video: {
+        select: {
+          youtubeId: true,
+          title: true,
+          thumbnailUrl: true,
+          channelName: true,
+          duration: true,
+        },
+      },
+      likes: { select: { userId: true } },
+      _count: { select: { comments: true } },
+    },
+  });
+
+  return (
+    <div className="min-h-screen">
+      <div className="bg-[var(--bg-secondary)] border-b border-[var(--border)]">
+        <div className="mx-auto max-w-2xl px-4 py-6">
+          <h1 className="text-2xl font-bold">Feed</h1>
+          <p className="text-sm text-[var(--text-muted)] mt-1">
+            Recent activity from people you follow
+          </p>
+        </div>
+      </div>
+
+      <div className="mx-auto max-w-2xl px-4 py-8 space-y-4">
+        {entries.length === 0 ? (
+          <p className="text-center text-[var(--text-dim)] py-16 text-sm">
+            No activity yet from the people you follow.
+          </p>
+        ) : (
+          entries.map((entry) => {
+            const likedByMe = entry.likes.some((l) => l.userId === currentUserId);
+            const likeCount = entry.likes.length;
+
+            return (
+              <div
+                key={entry.id}
+                className="bg-[var(--bg-card)] rounded-xl p-4 space-y-3"
+              >
+                {/* User row */}
+                <div className="flex items-center gap-2">
+                  {entry.user.image ? (
+                    <Link href={`/u/${entry.user.username ?? entry.user.name}`}>
+                      <Image
+                        src={entry.user.image}
+                        alt={entry.user.name ?? ""}
+                        width={28}
+                        height={28}
+                        className="rounded-full hover:opacity-80 transition-opacity"
+                      />
+                    </Link>
+                  ) : (
+                    <div className="w-7 h-7 rounded-full bg-[var(--bg-secondary)] flex items-center justify-center text-xs text-[var(--text-muted)]">
+                      {(entry.user.name ?? "?")[0].toUpperCase()}
+                    </div>
+                  )}
+                  <div className="flex items-baseline gap-1.5 flex-wrap text-sm">
+                    <Link
+                      href={`/u/${entry.user.username ?? entry.user.name}`}
+                      className="font-medium hover:text-[var(--accent-green)] transition-colors"
+                    >
+                      {entry.user.name ?? entry.user.username}
+                    </Link>
+                    <span className="text-[var(--text-dim)] text-xs">watched</span>
+                    <Link
+                      href={`/video/${entry.video.youtubeId}`}
+                      className="text-[var(--text-muted)] hover:text-white transition-colors text-xs"
+                    >
+                      {entry.video.title}
+                    </Link>
+                  </div>
+                  <span className="ml-auto text-xs text-[var(--text-dim)] flex-shrink-0">
+                    {formatDate(entry.watchedDate)}
+                  </span>
+                </div>
+
+                {/* Video card */}
+                <div className="flex gap-3 items-start">
+                  {entry.video.thumbnailUrl && (
+                    <Link href={`/video/${entry.video.youtubeId}`} className="flex-shrink-0">
+                      <Image
+                        src={entry.video.thumbnailUrl}
+                        alt={entry.video.title}
+                        width={112}
+                        height={63}
+                        className="rounded object-cover hover:opacity-80 transition-opacity"
+                      />
+                    </Link>
+                  )}
+                  <div className="flex-1 min-w-0 space-y-1">
+                    <Link
+                      href={`/video/${entry.video.youtubeId}`}
+                      className="font-medium text-sm hover:text-[var(--accent-green)] transition-colors line-clamp-2 leading-snug"
+                    >
+                      {entry.video.title}
+                    </Link>
+                    {entry.video.channelName && (
+                      <p className="text-xs text-[var(--text-dim)]">{entry.video.channelName}</p>
+                    )}
+                    <div className="flex items-center gap-2 flex-wrap">
+                      {entry.rating && <StarDisplay rating={entry.rating} />}
+                      {entry.liked && <span className="text-red-400 text-xs">♥</span>}
+                      {entry.rewatch && <span className="text-[var(--text-muted)] text-xs" title="Rewatch">↺</span>}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Review snippet */}
+                {entry.review && (
+                  <p className="text-sm text-[var(--text-dim)] leading-relaxed line-clamp-3 border-l-2 border-[var(--border)] pl-3">
+                    {entry.review}
+                  </p>
+                )}
+
+                {/* Actions */}
+                <div className="flex items-center gap-4 pt-1">
+                  <LikeButton
+                    diaryEntryId={entry.id}
+                    initialLiked={likedByMe}
+                    initialCount={likeCount}
+                    isLoggedIn={true}
+                  />
+                  <Link
+                    href={`/video/${entry.video.youtubeId}`}
+                    className="text-xs text-[var(--text-dim)] hover:text-[var(--text-muted)] transition-colors"
+                  >
+                    {entry._count.comments > 0
+                      ? `${entry._count.comments} comment${entry._count.comments !== 1 ? "s" : ""}`
+                      : "Comment"}
+                  </Link>
+                </div>
+              </div>
+            );
+          })
+        )}
+      </div>
+    </div>
+  );
+}

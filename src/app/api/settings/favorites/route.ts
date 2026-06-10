@@ -21,15 +21,17 @@ export async function PUT(req: NextRequest) {
   });
   const byYtId = Object.fromEntries(videos.map((v) => [v.youtubeId, v.id]));
 
+  const userId = session.user!.id as string;
+
   // Replace all favorites atomically
   await prisma.$transaction([
-    prisma.favoriteVideo.deleteMany({ where: { userId: session.user.id } }),
+    prisma.favoriteVideo.deleteMany({ where: { userId } }),
     ...youtubeIds.flatMap((ytId, i) => {
       const videoId = byYtId[ytId];
       if (!videoId) return [];
       return [
         prisma.favoriteVideo.create({
-          data: { userId: session.user.id, videoId, position: i + 1 },
+          data: { userId, videoId, position: i + 1 },
         }),
       ];
     }),

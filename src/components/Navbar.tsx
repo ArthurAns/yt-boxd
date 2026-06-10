@@ -31,6 +31,11 @@ export default function Navbar() {
 
         {/* Centre nav links (desktop) */}
         <div className="hidden md:flex items-center gap-6 text-sm font-medium text-[var(--text-muted)] uppercase tracking-wider">
+          {user && (
+            <Link href="/feed" className="hover:text-white transition-colors">
+              Feed
+            </Link>
+          )}
           <Link href="/videos" className="hover:text-white transition-colors">
             Videos
           </Link>
@@ -84,6 +89,13 @@ export default function Navbar() {
                       onClick={() => setMenuOpen(false)}
                     >
                       Profile
+                    </Link>
+                    <Link
+                      href="/feed"
+                      className="block px-4 py-2 hover:bg-[var(--bg-card)] text-[var(--text-muted)] hover:text-white"
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      Feed
                     </Link>
                     <Link
                       href="/settings"
