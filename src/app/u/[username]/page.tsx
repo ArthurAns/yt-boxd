@@ -109,8 +109,8 @@ export default async function ProfilePage({
           )}
         </div>
 
-        {/* Stats bar */}
-        <div className="mx-auto max-w-5xl px-4 pb-4 flex gap-8 text-sm">
+        {/* Stats bar + nav links */}
+        <div className="mx-auto max-w-5xl px-4 pb-4 flex items-center gap-8 text-sm flex-wrap">
           {[
             { label: "Videos", value: totalWatched },
             { label: "This year", value: thisYearCount },
@@ -125,6 +125,14 @@ export default async function ProfilePage({
               </div>
             </div>
           ))}
+          <div className="ml-auto flex gap-4 text-xs text-[var(--text-muted)] uppercase tracking-wide">
+            <Link href={`/u/${username}/diary`} className="hover:text-white transition-colors">
+              Diary
+            </Link>
+            <Link href={`/u/${username}/watchlist`} className="hover:text-white transition-colors">
+              Watchlist
+            </Link>
+          </div>
         </div>
       </div>
 
