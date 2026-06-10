@@ -1,26 +1,77 @@
 @import "tailwindcss";
 
+/* ─── Letterboxd-inspired colour tokens ───────────────────────────────────── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg-primary:        #14181c;
+  --bg-secondary:      #2c3440;
+  --bg-card:           #1f2937;
+  --border:            #456;
+  --text-primary:      #fff;
+  --text-muted:        #9ab;
+  --text-dim:          #678;
+  --accent-green:      #00e054;
+  --accent-green-dark: #00b020;
+  --star-color:        #00b020;
+  --star-empty:        #456;
+  --like-color:        #ef4444;
+  --orange-heart:      #f97316;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* ─── Base ────────────────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  color-scheme: dark;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
 }
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--accent-green);
+}
+
+/* ─── Scrollbar ───────────────────────────────────────────────────────────── */
+::-webkit-scrollbar        { width: 6px; height: 6px; }
+::-webkit-scrollbar-track  { background: var(--bg-primary); }
+::-webkit-scrollbar-thumb  { background: var(--border); border-radius: 3px; }
+
+/* ─── Utility classes ─────────────────────────────────────────────────────── */
+.text-muted     { color: var(--text-muted); }
+.text-dim       { color: var(--text-dim); }
+.text-accent    { color: var(--accent-green); }
+.bg-card        { background-color: var(--bg-card); }
+.bg-secondary   { background-color: var(--bg-secondary); }
+.border-default { border-color: var(--border); }
+
+/* ─── Star rating ─────────────────────────────────────────────────────────── */
+.star-filled { color: var(--star-color); }
+.star-empty  { color: var(--star-empty); }
+
+/* ─── Thumbnail aspect ratio ──────────────────────────────────────────────── */
+.thumbnail {
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 2px;
+}
+
+/* ─── Fade-in ─────────────────────────────────────────────────────────────── */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in { animation: fadeIn 0.15s ease-out; }

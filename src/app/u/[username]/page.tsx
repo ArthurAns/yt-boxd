@@ -1,0 +1,241 @@
+import { notFound } from "next/navigation";
+import Image from "next/image";
+import Link from "next/link";
+import { prisma } from "@/lib/prisma";
+import { auth } from "@/lib/auth";
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+
+function StarDisplay({ rating }: { rating: number | null }) {
+  if (!rating) return null;
+  const full = Math.floor(rating);
+  const half = rating % 1 >= 0.5;
+  return (
+    <span className="text-[var(--star-color)] text-xs tracking-tight">
+      {"★".repeat(full)}
+      {half ? "½" : ""}
+    </span>
+  );
+}
+
+function formatDate(d: Date) {
+  return new Date(d).toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+}
+
+// ─── Page ─────────────────────────────────────────────────────────────────────
+
+export default async function ProfilePage({
+  params,
+}: {
+  params: Promise<{ username: string }>;
+}) {
+  const { username } = await params;
+
+  const profileUser = await prisma.user.findUnique({
+    where: { username },
+    include: {
+      favoriteVideos: { include: { video: true }, orderBy: { position: "asc" } },
+    },
+  });
+
+  if (!profileUser) notFound();
+
+  // Stats
+  const [totalWatched, totalRatings, thisYearCount] = await Promise.all([
+    prisma.diaryEntry.count({ where: { userId: profileUser.id } }),
+    prisma.diaryEntry.count({
+      where: { userId: profileUser.id, rating: { not: null } },
+    }),
+    prisma.diaryEntry.count({
+      where: {
+        userId: profileUser.id,
+        watchedDate: { gte: new Date(`${new Date().getFullYear()}-01-01`) },
+      },
+    }),
+  ]);
+
+  // Recent diary entries (last 8)
+  const recentEntries = await prisma.diaryEntry.findMany({
+    where: { userId: profileUser.id },
+    orderBy: [{ watchedDate: "desc" }, { createdAt: "desc" }],
+    take: 8,
+    include: { video: true },
+  });
+
+  const session = await auth();
+  const isOwn =
+    (session?.user as { id?: string })?.id === profileUser.id;
+
+  return (
+    <div className="min-h-screen">
+      {/* ── Profile header ── */}
+      <div className="bg-[var(--bg-secondary)] border-b border-[var(--border)]">
+        <div className="mx-auto max-w-5xl px-4 py-8 flex items-end gap-6">
+          {profileUser.image ? (
+            <Image
+              src={profileUser.image}
+              alt={profileUser.name ?? username}
+              width={80}
+              height={80}
+              className="rounded-full flex-shrink-0"
+            />
+          ) : (
+            <div className="w-20 h-20 rounded-full bg-[var(--bg-card)] flex items-center justify-center text-2xl text-[var(--text-muted)] flex-shrink-0">
+              {(profileUser.name ?? username)[0].toUpperCase()}
+            </div>
+          )}
+          <div className="flex-1 min-w-0">
+            <h1 className="text-2xl font-bold truncate">
+              {profileUser.name ?? username}
+            </h1>
+            <p className="text-sm text-[var(--text-muted)]">@{username}</p>
+            {profileUser.bio && (
+              <p className="mt-2 text-sm text-[var(--text-dim)] max-w-lg">
+                {profileUser.bio}
+              </p>
+            )}
+          </div>
+          {isOwn && (
+            <Link
+              href="/settings"
+              className="text-xs text-[var(--text-muted)] border border-[var(--border)] rounded px-3 py-1.5 hover:text-white hover:border-white/30 transition-colors flex-shrink-0"
+            >
+              Edit profile
+            </Link>
+          )}
+        </div>
+
+        {/* Stats bar */}
+        <div className="mx-auto max-w-5xl px-4 pb-4 flex gap-8 text-sm">
+          {[
+            { label: "Videos", value: totalWatched },
+            { label: "This year", value: thisYearCount },
+            { label: "Ratings", value: totalRatings },
+          ].map(({ label, value }) => (
+            <div key={label} className="text-center">
+              <div className="text-white font-bold text-lg leading-none">
+                {value}
+              </div>
+              <div className="text-[var(--text-muted)] text-xs mt-0.5 uppercase tracking-wide">
+                {label}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="mx-auto max-w-5xl px-4 py-8 space-y-10">
+        {/* ── Favorite videos (up to 4) ── */}
+        {profileUser.favoriteVideos.length > 0 && (
+          <section>
+            <h2 className="text-xs font-bold uppercase tracking-widest text-[var(--text-muted)] mb-3">
+              Favorite videos
+            </h2>
+            <div className="flex gap-3 flex-wrap">
+              {profileUser.favoriteVideos.map(({ video }) => (
+                <Link
+                  key={video.id}
+                  href={`/video/${video.youtubeId}`}
+                  className="group relative w-36 flex-shrink-0"
+                >
+                  {video.thumbnailUrl ? (
+                    <Image
+                      src={video.thumbnailUrl}
+                      alt={video.title}
+                      width={144}
+                      height={81}
+                      className="rounded w-full object-cover group-hover:opacity-80 transition-opacity"
+                    />
+                  ) : (
+                    <div className="w-36 h-20 bg-[var(--bg-card)] rounded flex items-center justify-center text-[var(--text-dim)] text-xs">
+                      No thumb
+                    </div>
+                  )}
+                  <p className="text-xs text-[var(--text-muted)] mt-1 line-clamp-2 group-hover:text-white transition-colors">
+                    {video.title}
+                  </p>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* ── Recent diary entries ── */}
+        <section>
+          <div className="flex items-baseline justify-between mb-3">
+            <h2 className="text-xs font-bold uppercase tracking-widest text-[var(--text-muted)]">
+              Recent watches
+            </h2>
+            <Link
+              href={`/u/${username}/diary`}
+              className="text-xs text-[var(--accent-green)] hover:underline"
+            >
+              All diary entries →
+            </Link>
+          </div>
+
+          {recentEntries.length === 0 ? (
+            <p className="text-sm text-[var(--text-dim)]">
+              No videos logged yet.{" "}
+              {isOwn && (
+                <Link href="/log" className="text-[var(--accent-green)] hover:underline">
+                  Log your first watch
+                </Link>
+              )}
+            </p>
+          ) : (
+            <div className="space-y-3">
+              {recentEntries.map((entry) => (
+                <div
+                  key={entry.id}
+                  className="flex gap-3 bg-[var(--bg-card)] rounded-lg p-3 items-start"
+                >
+                  {entry.video.thumbnailUrl ? (
+                    <Link href={`/video/${entry.video.youtubeId}`} className="flex-shrink-0">
+                      <Image
+                        src={entry.video.thumbnailUrl}
+                        alt={entry.video.title}
+                        width={96}
+                        height={54}
+                        className="rounded object-cover hover:opacity-80 transition-opacity"
+                      />
+                    </Link>
+                  ) : null}
+                  <div className="flex-1 min-w-0">
+                    <Link
+                      href={`/video/${entry.video.youtubeId}`}
+                      className="font-medium text-sm hover:text-[var(--accent-green)] transition-colors line-clamp-1"
+                    >
+                      {entry.video.title}
+                    </Link>
+                    <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                      <span className="text-xs text-[var(--text-muted)]">
+                        {formatDate(entry.watchedDate)}
+                      </span>
+                      {entry.rating && <StarDisplay rating={entry.rating} />}
+                      {entry.liked && (
+                        <span className="text-red-400 text-xs">♥</span>
+                      )}
+                      {entry.rewatch && (
+                        <span className="text-[var(--text-muted)] text-xs">↺</span>
+                      )}
+                    </div>
+                    {entry.review && (
+                      <p className="text-xs text-[var(--text-dim)] mt-1 line-clamp-2">
+                        {entry.review}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+      </div>
+    </div>
+  );
+}
