@@ -17,7 +17,7 @@ export default async function ListsPage() {
         user: { select: { username: true, name: true, image: true } },
         items: {
           orderBy: { position: "asc" },
-          take: 4,
+          take: 5,
           include: { video: { select: { thumbnailUrl: true, title: true } } },
         },
         _count: { select: { items: true } },
@@ -77,22 +77,34 @@ export default async function ListsPage() {
                 href={`/lists/${list.id}`}
                 className="bg-[var(--bg-card)] border border-white/[0.06] rounded-lg p-4 hover:bg-[var(--bg-secondary)] hover:border-white/[0.14] transition-colors group space-y-3"
               >
-                {/* Thumbnail strip */}
-                {list.items.length > 0 && (
-                  <div className="flex gap-1 overflow-hidden rounded-md">
-                    {list.items.map(({ video }, i) =>
-                      video.thumbnailUrl ? (
-                        <div key={i} className="relative flex-1 aspect-video min-w-0">
+                {/* Overlapping thumbnail stack */}
+                {list.items.length > 0 ? (
+                  <div className="relative h-28">
+                    {list.items.map(({ video }, i) => (
+                      <div
+                        key={i}
+                        className="absolute top-0 h-full aspect-video rounded-md overflow-hidden ring-1 ring-black/60 shadow-lg bg-[var(--bg-secondary)]"
+                        style={{ left: `${i * 12.5}%`, zIndex: list.items.length - i }}
+                      >
+                        {video.thumbnailUrl ? (
                           <Image
                             src={video.thumbnailUrl}
                             alt={video.title}
                             fill
                             className="object-cover"
-                            sizes="10vw"
+                            sizes="200px"
                           />
-                        </div>
-                      ) : null
-                    )}
+                        ) : (
+                          <div className="absolute inset-0 flex items-center justify-center text-[var(--text-dim)] text-xs">
+                            No thumb
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="h-28 rounded-md bg-[var(--bg-secondary)]/60 border border-dashed border-white/10 flex items-center justify-center text-xs text-[var(--text-dim)]">
+                    Empty list
                   </div>
                 )}
 

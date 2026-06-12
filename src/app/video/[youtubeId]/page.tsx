@@ -1,6 +1,5 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
@@ -84,6 +83,13 @@ export default async function VideoPage({
       : null;
   const likeCount = entries.filter((e) => e.liked).length;
 
+  // Distribution of ratings in half-star buckets (0.5 … 5)
+  const ratingBuckets = Array.from({ length: 10 }, (_, i) => {
+    const value = (i + 1) / 2;
+    return { value, count: ratings.filter((r) => r === value).length };
+  });
+  const maxBucket = Math.max(...ratingBuckets.map((b) => b.count), 1);
+
   // ── Current user's own entry (if any) ───────────────────────────────────
   const ownEntry = currentUserId
     ? entries.find((e) => e.user.id === currentUserId) ?? null
@@ -154,6 +160,36 @@ export default async function VideoPage({
                     <div className="text-[var(--text-muted)] text-xs mt-0.5 uppercase tracking-wide">
                       Avg rating
                     </div>
+                  </div>
+                )}
+                {ratings.length > 0 && (
+                  <div
+                    className="flex items-end gap-1.5"
+                    role="img"
+                    aria-label={`Rating distribution across ${ratings.length} rating${ratings.length !== 1 ? "s" : ""}`}
+                  >
+                    <span className="text-[10px] text-[var(--text-dim)] leading-none pb-px">
+                      ½★
+                    </span>
+                    <div className="flex items-end gap-px h-9">
+                      {ratingBuckets.map(({ value, count }) => (
+                        <div
+                          key={value}
+                          title={`${value}★ — ${count} rating${count !== 1 ? "s" : ""}`}
+                          className={`w-2 rounded-sm ${
+                            count > 0
+                              ? "bg-[var(--star-color)]/80 hover:bg-[var(--star-color)]"
+                              : "bg-white/10"
+                          } transition-colors`}
+                          style={{
+                            height: `${Math.max((count / maxBucket) * 100, 6)}%`,
+                          }}
+                        />
+                      ))}
+                    </div>
+                    <span className="text-[10px] text-[var(--text-dim)] leading-none pb-px">
+                      5★
+                    </span>
                   </div>
                 )}
                 {likeCount > 0 && (
