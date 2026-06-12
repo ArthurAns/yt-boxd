@@ -29,28 +29,28 @@ export default async function HomePage() {
   return (
     <div className="px-4">
       <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
-        <h1 className="text-5xl font-bold mb-4 leading-tight">
+        <h1 className="text-3xl sm:text-5xl font-bold mb-4 leading-tight">
           Track videos you&apos;ve watched.
           <br />
           <span className="text-[var(--accent-green)]">Save those you want to.</span>
           <br />
           Tell your friends what&apos;s good.
         </h1>
-        <p className="text-[var(--text-muted)] text-lg max-w-xl mb-8">
+        <p className="text-[var(--text-muted)] text-base sm:text-lg max-w-xl mb-8">
           YTBoxd is a social platform for YouTube. Keep a diary, rate videos,
           write reviews, and see what your friends are watching.
         </p>
         {loggedIn ? (
           <Link
             href="/log"
-            className="bg-[var(--accent-green)] text-black font-bold px-6 py-3 rounded text-lg hover:bg-[var(--accent-green-dark)] transition-colors"
+            className="bg-[var(--accent-green)] text-black font-bold px-6 py-3 rounded-md text-lg hover:bg-[var(--accent-green-dark)] transition-colors"
           >
             + Log a video
           </Link>
         ) : (
           <Link
             href="/login"
-            className="bg-[var(--accent-green)] text-black font-bold px-6 py-3 rounded text-lg hover:bg-[var(--accent-green-dark)] transition-colors"
+            className="bg-[var(--accent-green)] text-black font-bold px-6 py-3 rounded-md text-lg hover:bg-[var(--accent-green-dark)] transition-colors"
           >
             Get started — it&apos;s free
           </Link>
@@ -91,15 +91,17 @@ export default async function HomePage() {
                     className="group space-y-1.5"
                   >
                     {entry.video.thumbnailUrl ? (
-                      <Image
-                        src={entry.video.thumbnailUrl}
-                        alt={entry.video.title}
-                        width={200}
-                        height={113}
-                        className="rounded w-full object-cover aspect-video group-hover:opacity-80 transition-opacity"
-                      />
+                      <div className="overflow-hidden rounded-md">
+                        <Image
+                          src={entry.video.thumbnailUrl}
+                          alt={entry.video.title}
+                          width={200}
+                          height={113}
+                          className="w-full object-cover aspect-video transition-transform duration-300 group-hover:scale-105"
+                        />
+                      </div>
                     ) : (
-                      <div className="w-full aspect-video bg-[var(--bg-card)] rounded flex items-center justify-center text-[var(--text-dim)] text-xs">
+                      <div className="w-full aspect-video bg-[var(--bg-card)] rounded-md flex items-center justify-center text-[var(--text-dim)] text-xs">
                         No thumb
                       </div>
                     )}

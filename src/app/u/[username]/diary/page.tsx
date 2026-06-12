@@ -113,14 +113,14 @@ export default async function DiaryPage({
                             {entry.video.thumbnailUrl ? (
                               <Link
                                 href={`/video/${entry.video.youtubeId}`}
-                                className="flex-shrink-0"
+                                className="flex-shrink-0 block overflow-hidden rounded-md"
                               >
                                 <Image
                                   src={entry.video.thumbnailUrl}
                                   alt={entry.video.title}
                                   width={64}
                                   height={36}
-                                  className="rounded object-cover group-hover:opacity-80 transition-opacity"
+                                  className="object-cover transition-transform duration-300 hover:scale-105"
                                 />
                               </Link>
                             ) : null}

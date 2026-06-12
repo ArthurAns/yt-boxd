@@ -41,7 +41,7 @@ export default function AddToListForm({ listId }: { listId: string }) {
   }
 
   return (
-    <section className="bg-[var(--bg-card)] rounded-xl p-5 space-y-4">
+    <section className="bg-[var(--bg-card)] border border-white/[0.06] rounded-lg p-5 space-y-4">
       <h2 className="text-sm font-bold uppercase tracking-widest text-[var(--text-muted)]">
         Add a video
       </h2>

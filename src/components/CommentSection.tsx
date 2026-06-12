@@ -108,12 +108,12 @@ export default function CommentSection({
                 onChange={(e) => setBody(e.target.value)}
                 placeholder="Add a comment…"
                 maxLength={1000}
-                className="flex-1 bg-[var(--bg-secondary)] border border-white/10 rounded px-3 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-[var(--accent-green)] placeholder:text-[var(--text-dim)]"
+                className="flex-1 bg-[var(--bg-secondary)] border border-white/10 rounded-md px-3 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-[var(--accent-green)] placeholder:text-[var(--text-dim)]"
               />
               <button
                 type="submit"
                 disabled={submitting || !body.trim()}
-                className="text-xs px-3 py-1.5 bg-[var(--accent-green)] hover:bg-[var(--accent-green-dark)] text-black font-semibold rounded transition-colors disabled:opacity-50"
+                className="text-xs px-3 py-1.5 bg-[var(--accent-green)] hover:bg-[var(--accent-green-dark)] text-black font-semibold rounded-md transition-colors disabled:opacity-50"
               >
                 Post
               </button>

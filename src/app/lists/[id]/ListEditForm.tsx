@@ -63,7 +63,7 @@ export default function ListEditForm({
     return (
       <button
         onClick={() => setOpen(true)}
-        className="flex-shrink-0 text-xs text-[var(--text-dim)] hover:text-[var(--text-muted)] border border-[var(--border)] rounded px-2.5 py-1 transition-colors"
+        className="flex-shrink-0 text-xs text-[var(--text-dim)] hover:text-[var(--text-muted)] border border-[var(--border)] rounded-md px-2.5 py-1 transition-colors"
       >
         Edit
       </button>
@@ -73,7 +73,7 @@ export default function ListEditForm({
   return (
     <form
       onSubmit={save}
-      className="mt-4 space-y-3 bg-[var(--bg-card)] border border-[var(--border)] rounded-xl p-4"
+      className="mt-4 space-y-3 bg-[var(--bg-card)] border border-[var(--border)] rounded-lg p-4"
     >
       <div className="space-y-1">
         <label className="text-xs text-[var(--text-muted)]" htmlFor="edit-name">

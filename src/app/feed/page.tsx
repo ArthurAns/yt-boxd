@@ -42,7 +42,7 @@ export default async function FeedPage() {
           </p>
           <Link
             href="/members"
-            className="inline-flex items-center gap-1.5 bg-[var(--accent-green)] hover:bg-[var(--accent-green-dark)] text-black font-bold px-4 py-2 rounded text-sm transition-colors"
+            className="inline-flex items-center gap-1.5 bg-[var(--accent-green)] hover:bg-[var(--accent-green-dark)] text-black font-bold px-4 py-2 rounded-md text-sm transition-colors"
           >
             Find people to follow →
           </Link>
@@ -95,7 +95,7 @@ export default async function FeedPage() {
             return (
               <div
                 key={entry.id}
-                className="bg-[var(--bg-card)] rounded-xl p-4 space-y-3"
+                className="bg-[var(--bg-card)] border border-white/[0.06] rounded-lg p-4 space-y-3"
               >
                 {/* User row */}
                 <div className="flex items-center gap-2">
@@ -125,13 +125,13 @@ export default async function FeedPage() {
                 {/* Video card */}
                 <div className="flex gap-3 items-start">
                   {entry.video.thumbnailUrl && (
-                    <Link href={`/video/${entry.video.youtubeId}`} className="flex-shrink-0">
+                    <Link href={`/video/${entry.video.youtubeId}`} className="flex-shrink-0 block overflow-hidden rounded-md">
                       <Image
                         src={entry.video.thumbnailUrl}
                         alt={entry.video.title}
                         width={112}
                         height={63}
-                        className="rounded object-cover hover:opacity-80 transition-opacity"
+                        className="object-cover transition-transform duration-300 hover:scale-105"
                       />
                     </Link>
                   )}

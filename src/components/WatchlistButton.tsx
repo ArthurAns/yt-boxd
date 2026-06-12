@@ -38,7 +38,7 @@ export default function WatchlistButton({
     <button
       onClick={toggle}
       disabled={loading}
-      className={`flex items-center gap-1.5 text-sm px-4 py-2 rounded border transition-colors disabled:opacity-50 ${
+      className={`flex items-center gap-1.5 text-sm px-4 py-2 rounded-md border transition-colors disabled:opacity-50 ${
         inWatchlist
           ? "bg-[var(--accent-green)]/10 border-[var(--accent-green)] text-[var(--accent-green)] hover:bg-red-500/10 hover:border-red-400 hover:text-red-400"
           : "border-[var(--border)] text-[var(--text-muted)] hover:border-white/30 hover:text-white"

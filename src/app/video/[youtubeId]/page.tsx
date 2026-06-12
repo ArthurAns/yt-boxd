@@ -172,7 +172,7 @@ export default async function VideoPage({
               <div className="mt-auto pt-2 space-y-2">
                 {ownEntry ? (
                   <div className="flex items-center gap-3 flex-wrap">
-                    <div className="flex items-center gap-2 bg-[var(--bg-card)] rounded-lg px-3 py-2 text-sm">
+                    <div className="flex items-center gap-2 bg-[var(--bg-card)] border border-white/[0.06] rounded-lg px-3 py-2 text-sm">
                       <span className="text-[var(--accent-green)] text-xs font-bold uppercase tracking-wide">
                         You watched
                       </span>
@@ -191,7 +191,7 @@ export default async function VideoPage({
                     </div>
                     <Link
                       href={`/log?v=${youtubeId}`}
-                      className="text-xs text-[var(--text-muted)] border border-[var(--border)] rounded px-3 py-2 hover:text-white hover:border-white/30 transition-colors"
+                      className="text-xs text-[var(--text-muted)] border border-[var(--border)] rounded-md px-3 py-2 hover:text-white hover:border-white/30 transition-colors"
                     >
                       Log again
                     </Link>
@@ -200,7 +200,7 @@ export default async function VideoPage({
                   <div>
                     <Link
                       href={`/log?v=${youtubeId}`}
-                      className="inline-flex items-center gap-1.5 bg-[var(--accent-green)] hover:bg-[var(--accent-green-dark)] text-black font-bold px-4 py-2 rounded text-sm transition-colors"
+                      className="inline-flex items-center gap-1.5 bg-[var(--accent-green)] hover:bg-[var(--accent-green-dark)] text-black font-bold px-4 py-2 rounded-md text-sm transition-colors"
                     >
                       + Log this video
                     </Link>
@@ -252,7 +252,7 @@ export default async function VideoPage({
               {reviewEntries.map((entry) => (
                 <div
                   key={entry.id}
-                  className="bg-[var(--bg-card)] rounded-lg p-4 space-y-2"
+                  className="bg-[var(--bg-card)] border border-white/[0.06] rounded-lg p-4 space-y-2"
                 >
                   <div className="flex items-center gap-3">
                     <Link href={`/u/${entry.user.username ?? entry.user.name}`}>
@@ -317,7 +317,7 @@ export default async function VideoPage({
                 <Link
                   key={entry.id}
                   href={`/u/${entry.user.username ?? entry.user.name}`}
-                  className="flex items-center gap-2 bg-[var(--bg-card)] rounded-full pl-1 pr-3 py-1 hover:bg-[var(--bg-secondary)] transition-colors text-sm"
+                  className="flex items-center gap-2 bg-[var(--bg-card)] border border-white/[0.06] rounded-full pl-1 pr-3 py-1 hover:bg-[var(--bg-secondary)] hover:border-white/[0.14] transition-colors text-sm"
                 >
                   <Avatar src={entry.user.image} name={entry.user.name} size={24} />
                   <span className="text-[var(--text-muted)] text-xs">
@@ -343,7 +343,7 @@ export default async function VideoPage({
             <p className="text-lg">No one has logged this video yet.</p>
             <Link
               href={`/log?v=${youtubeId}`}
-              className="mt-4 inline-flex items-center gap-1.5 bg-[var(--accent-green)] hover:bg-[var(--accent-green-dark)] text-black font-bold px-4 py-2 rounded text-sm transition-colors"
+              className="mt-4 inline-flex items-center gap-1.5 bg-[var(--accent-green)] hover:bg-[var(--accent-green-dark)] text-black font-bold px-4 py-2 rounded-md text-sm transition-colors"
             >
               + Be the first
             </Link>

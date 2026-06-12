@@ -72,7 +72,7 @@ export default function AddToListButton({
         onClick={() => setOpen((v) => !v)}
         aria-label="Add to list"
         aria-expanded={open}
-        className="text-[10px] font-semibold uppercase tracking-wide text-[var(--text-dim)] hover:text-[var(--accent-green)] border border-[var(--border)] hover:border-[var(--accent-green)]/40 rounded px-2 py-1 transition-colors"
+        className="text-[10px] font-semibold uppercase tracking-wide text-[var(--text-dim)] hover:text-[var(--accent-green)] border border-[var(--border)] hover:border-[var(--accent-green)]/40 rounded-md px-2 py-1 transition-colors"
       >
         + list
       </button>

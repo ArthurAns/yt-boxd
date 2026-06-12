@@ -41,7 +41,7 @@ export default async function ListsPage() {
           {isLoggedIn && (
             <Link
               href="/lists/new"
-              className="bg-[var(--accent-green)] hover:bg-[var(--accent-green-dark)] text-black text-sm font-bold px-4 py-2 rounded transition-colors"
+              className="bg-[var(--accent-green)] hover:bg-[var(--accent-green-dark)] text-black text-sm font-bold px-4 py-2 rounded-md transition-colors"
             >
               + New list
             </Link>
@@ -75,11 +75,11 @@ export default async function ListsPage() {
               <Link
                 key={list.id}
                 href={`/lists/${list.id}`}
-                className="bg-[var(--bg-card)] rounded-lg p-4 hover:bg-[var(--bg-secondary)] transition-colors group space-y-3"
+                className="bg-[var(--bg-card)] border border-white/[0.06] rounded-lg p-4 hover:bg-[var(--bg-secondary)] hover:border-white/[0.14] transition-colors group space-y-3"
               >
                 {/* Thumbnail strip */}
                 {list.items.length > 0 && (
-                  <div className="flex gap-1 overflow-hidden rounded">
+                  <div className="flex gap-1 overflow-hidden rounded-md">
                     {list.items.map(({ video }, i) =>
                       video.thumbnailUrl ? (
                         <div key={i} className="relative flex-1 aspect-video min-w-0">

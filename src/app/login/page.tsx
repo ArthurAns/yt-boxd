@@ -17,7 +17,7 @@ function LoginForm() {
         </p>
         <button
           onClick={() => signIn("google", { callbackUrl })}
-          className="w-full flex items-center justify-center gap-3 bg-white text-gray-800 font-semibold py-2.5 px-4 rounded hover:bg-gray-100 transition-colors"
+          className="w-full flex items-center justify-center gap-3 bg-white text-gray-800 font-semibold py-2.5 px-4 rounded-md hover:bg-gray-100 transition-colors"
         >
           {/* Google G icon */}
           <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">

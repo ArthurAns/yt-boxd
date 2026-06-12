@@ -97,7 +97,7 @@ export default function SettingsForm({
   return (
     <div className="space-y-10">
       {/* ── Profile section ── */}
-      <section className="bg-[var(--bg-card)] rounded-xl p-6 space-y-5">
+      <section className="bg-[var(--bg-card)] border border-white/[0.06] rounded-lg p-6 space-y-5">
         <h2 className="text-sm font-bold uppercase tracking-widest text-[var(--text-muted)]">
           Profile
         </h2>
@@ -167,7 +167,7 @@ export default function SettingsForm({
       </section>
 
       {/* ── Favorite videos section ── */}
-      <section className="bg-[var(--bg-card)] rounded-xl p-6 space-y-5">
+      <section className="bg-[var(--bg-card)] border border-white/[0.06] rounded-lg p-6 space-y-5">
         <div>
           <h2 className="text-sm font-bold uppercase tracking-widest text-[var(--text-muted)]">
             Favorite Videos
@@ -192,10 +192,10 @@ export default function SettingsForm({
                           alt={fav.title}
                           width={144}
                           height={81}
-                          className="rounded w-full object-cover"
+                          className="rounded-md w-full object-cover"
                         />
                       ) : (
-                        <div className="w-full aspect-video bg-[var(--bg-secondary)] rounded flex items-center justify-center text-[var(--text-dim)] text-xs">
+                        <div className="w-full aspect-video bg-[var(--bg-secondary)] rounded-md flex items-center justify-center text-[var(--text-dim)] text-xs">
                           No thumb
                         </div>
                       )}
@@ -210,7 +210,7 @@ export default function SettingsForm({
                       <p className="text-xs text-[var(--text-dim)] line-clamp-1 mt-0.5">{fav.title}</p>
                     </div>
                   ) : (
-                    <div className="w-full aspect-video bg-[var(--bg-secondary)] rounded border-2 border-dashed border-white/10 flex items-center justify-center text-[var(--text-dim)] text-xs">
+                    <div className="w-full aspect-video bg-[var(--bg-secondary)] rounded-md border-2 border-dashed border-white/10 flex items-center justify-center text-[var(--text-dim)] text-xs">
                       {i + 1}
                     </div>
                   )}
@@ -246,7 +246,7 @@ export default function SettingsForm({
                           alt={v.title}
                           width={56}
                           height={32}
-                          className="rounded object-cover flex-shrink-0"
+                          className="rounded-md object-cover flex-shrink-0"
                         />
                       )}
                       <div className="min-w-0">

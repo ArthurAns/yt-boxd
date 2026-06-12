@@ -33,7 +33,7 @@ export default function NewListForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="bg-[var(--bg-card)] rounded-xl p-6 space-y-5">
+    <form onSubmit={handleSubmit} className="bg-[var(--bg-card)] border border-white/[0.06] rounded-lg p-6 space-y-5">
       <div className="space-y-1.5">
         <label className="text-sm text-[var(--text-muted)]" htmlFor="list-name">
           List name <span className="text-red-400">*</span>

@@ -93,9 +93,9 @@ export default function Navbar() {
               <span className="text-xl leading-none mx-auto">×</span>
             ) : (
               <>
-                <span className="block h-0.5 w-5 bg-current mx-auto rounded" />
-                <span className="block h-0.5 w-5 bg-current mx-auto rounded" />
-                <span className="block h-0.5 w-5 bg-current mx-auto rounded" />
+                <span className="block h-0.5 w-5 bg-current mx-auto rounded-full" />
+                <span className="block h-0.5 w-5 bg-current mx-auto rounded-full" />
+                <span className="block h-0.5 w-5 bg-current mx-auto rounded-full" />
               </>
             )}
           </button>
@@ -123,7 +123,7 @@ export default function Navbar() {
             <>
               <Link
                 href="/log"
-                className="inline-flex items-center gap-1 bg-[var(--accent-green)] text-black text-xs font-bold px-3 py-1.5 rounded hover:bg-[var(--accent-green-dark)] transition-colors"
+                className="inline-flex items-center gap-1 bg-[var(--accent-green)] text-black text-xs font-bold px-3 py-1.5 rounded-md hover:bg-[var(--accent-green-dark)] transition-colors"
               >
                 + LOG
               </Link>
@@ -142,7 +142,7 @@ export default function Navbar() {
                 </button>
 
                 {menuOpen && (
-                  <div className="absolute right-0 top-full mt-2 w-44 bg-[var(--bg-secondary)] border border-[var(--border)] rounded shadow-lg text-sm py-1 animate-fade-in">
+                  <div className="absolute right-0 top-full mt-2 w-44 bg-[var(--bg-secondary)] border border-[var(--border)] rounded-md shadow-lg text-sm py-1 animate-fade-in">
                     <Link
                       href={`/u/${user.username ?? user.name}`}
                       className="block px-4 py-2 hover:bg-[var(--bg-card)] text-[var(--text-muted)] hover:text-white"
@@ -188,7 +188,7 @@ export default function Navbar() {
               </Link>
               <button
                 onClick={() => signIn("google")}
-                className="bg-[var(--accent-green)] text-black text-xs font-bold px-3 py-1.5 rounded hover:bg-[var(--accent-green-dark)] transition-colors"
+                className="bg-[var(--accent-green)] text-black text-xs font-bold px-3 py-1.5 rounded-md hover:bg-[var(--accent-green-dark)] transition-colors"
               >
                 Create account
               </button>

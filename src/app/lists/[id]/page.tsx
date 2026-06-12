@@ -77,7 +77,7 @@ export default async function ListPage({
             </div>
             <div className="flex items-center gap-2 flex-shrink-0">
               {!list.isPublic && (
-                <span className="text-xs border border-[var(--border)] text-[var(--text-muted)] px-2 py-0.5 rounded">
+                <span className="text-xs border border-[var(--border)] text-[var(--text-muted)] px-2 py-0.5 rounded-md">
                   Private
                 </span>
               )}
@@ -120,19 +120,19 @@ export default async function ListPage({
             {list.items.map((item, index) => (
               <div
                 key={item.id}
-                className="flex items-start gap-3 bg-[var(--bg-card)] rounded-lg p-3"
+                className="flex items-start gap-3 bg-[var(--bg-card)] border border-white/[0.06] rounded-lg p-3"
               >
                 <span className="text-[var(--text-dim)] text-sm tabular-nums w-5 text-right flex-shrink-0 pt-0.5">
                   {index + 1}
                 </span>
                 {item.video.thumbnailUrl ? (
-                  <Link href={`/video/${item.video.youtubeId}`} className="flex-shrink-0">
+                  <Link href={`/video/${item.video.youtubeId}`} className="flex-shrink-0 block overflow-hidden rounded-md">
                     <Image
                       src={item.video.thumbnailUrl}
                       alt={item.video.title}
                       width={96}
                       height={54}
-                      className="rounded object-cover hover:opacity-80 transition-opacity"
+                      className="object-cover transition-transform duration-300 hover:scale-105"
                     />
                   </Link>
                 ) : null}

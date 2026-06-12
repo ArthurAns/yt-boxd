@@ -68,16 +68,16 @@ export default async function WatchlistPage({
             {items.map(({ video, addedAt }) => (
               <div
                 key={video.youtubeId}
-                className="flex items-center gap-3 bg-[var(--bg-card)] rounded-lg p-3"
+                className="flex items-center gap-3 bg-[var(--bg-card)] border border-white/[0.06] rounded-lg p-3"
               >
                 {video.thumbnailUrl ? (
-                  <Link href={`/video/${video.youtubeId}`} className="flex-shrink-0">
+                  <Link href={`/video/${video.youtubeId}`} className="flex-shrink-0 block overflow-hidden rounded-md">
                     <Image
                       src={video.thumbnailUrl}
                       alt={video.title}
                       width={96}
                       height={54}
-                      className="rounded object-cover hover:opacity-80 transition-opacity"
+                      className="object-cover transition-transform duration-300 hover:scale-105"
                     />
                   </Link>
                 ) : null}

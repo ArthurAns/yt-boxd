@@ -204,7 +204,7 @@ function LogForm() {
   if (success) {
     return (
       <div className="min-h-screen flex items-center justify-center px-4">
-        <div className="bg-[var(--bg-card)] rounded-xl p-8 max-w-md w-full text-center space-y-4">
+        <div className="bg-[var(--bg-card)] border border-white/[0.06] rounded-lg p-8 max-w-md w-full text-center space-y-4">
           <div className="text-4xl">✓</div>
           <h2 className="text-xl font-bold text-[var(--accent-green)]">Logged!</h2>
           {preview && (
@@ -216,7 +216,7 @@ function LogForm() {
             </p>
           )}
           {quotaNotice && (
-            <p className="text-xs text-yellow-400 bg-yellow-900/20 rounded px-3 py-2">
+            <p className="text-xs text-yellow-400 bg-yellow-900/20 rounded-md px-3 py-2">
               YouTube API quota reached today — extra video details (duration,
               description) will be filled in automatically when the quota resets.
             </p>
@@ -233,13 +233,13 @@ function LogForm() {
                 setReview("");
                 setWatchedDate(new Date().toISOString().split("T")[0]);
               }}
-              className="px-4 py-2 rounded bg-[var(--bg-secondary)] hover:bg-[var(--bg-secondary)]/80 text-sm transition-colors"
+              className="px-4 py-2 rounded-md bg-[var(--bg-secondary)] hover:bg-[var(--bg-secondary)]/80 text-sm transition-colors"
             >
               Log another
             </button>
             <button
               onClick={() => router.push(`/u/${(session?.user as { username?: string })?.username ?? session?.user?.email}`)}
-              className="px-4 py-2 rounded bg-[var(--accent-green)] hover:bg-[var(--accent-green-dark)] text-black text-sm font-semibold transition-colors"
+              className="px-4 py-2 rounded-md bg-[var(--accent-green)] hover:bg-[var(--accent-green-dark)] text-black text-sm font-semibold transition-colors"
             >
               View diary
             </button>
@@ -280,13 +280,13 @@ function LogForm() {
             <div className="text-sm text-red-400">{previewError}</div>
           )}
           {preview && (
-            <div className="flex gap-3 bg-[var(--bg-card)] rounded-lg p-3 items-start">
+            <div className="flex gap-3 bg-[var(--bg-card)] border border-white/[0.06] rounded-lg p-3 items-start">
               <Image
                 src={preview.thumbnail}
                 alt={preview.title}
                 width={120}
                 height={68}
-                className="rounded object-cover flex-shrink-0"
+                className="rounded-md object-cover flex-shrink-0"
               />
               <div className="min-w-0">
                 <p className="font-medium text-sm leading-snug line-clamp-2">

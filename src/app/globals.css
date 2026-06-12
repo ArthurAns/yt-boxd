@@ -5,14 +5,14 @@
   --bg-primary:        #14181c;
   --bg-secondary:      #2c3440;
   --bg-card:           #1f2937;
-  --border:            #456;
+  --border:            rgba(255, 255, 255, 0.1);
   --text-primary:      #fff;
   --text-muted:        #9ab;
   --text-dim:          #678;
   --accent-green:      #00e054;
   --accent-green-dark: #00b020;
   --star-color:        #00b020;
-  --star-empty:        #456;
+  --star-empty:        #445566;
   --like-color:        #ef4444;
   --orange-heart:      #f97316;
 }
@@ -31,9 +31,19 @@ html {
 body {
   background-color: var(--bg-primary);
   color: var(--text-primary);
-  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 {
+  letter-spacing: -0.02em;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent-green);
+  outline-offset: 2px;
+  border-radius: 2px;
 }
 
 a {
@@ -48,7 +58,7 @@ a:hover {
 /* ─── Scrollbar ───────────────────────────────────────────────────────────── */
 ::-webkit-scrollbar        { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track  { background: var(--bg-primary); }
-::-webkit-scrollbar-thumb  { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb  { background: #445566; border-radius: 3px; }
 
 /* ─── Utility classes ─────────────────────────────────────────────────────── */
 .text-muted     { color: var(--text-muted); }
@@ -66,7 +76,7 @@ a:hover {
 .thumbnail {
   aspect-ratio: 16 / 9;
   object-fit: cover;
-  border-radius: 2px;
+  border-radius: 6px;
 }
 
 /* ─── Fade-in ─────────────────────────────────────────────────────────────── */

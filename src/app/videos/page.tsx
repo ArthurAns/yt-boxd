@@ -43,13 +43,13 @@ export default async function VideosPage() {
                 href={`/video/${video.youtubeId}`}
                 className="group space-y-2"
               >
-                <div className="relative aspect-video bg-[var(--bg-card)] rounded overflow-hidden">
+                <div className="relative aspect-video bg-[var(--bg-card)] rounded-md overflow-hidden">
                   {video.thumbnailUrl ? (
                     <Image
                       src={video.thumbnailUrl}
                       alt={video.title}
                       fill
-                      className="object-cover group-hover:opacity-80 transition-opacity"
+                      className="object-cover transition-transform duration-300 group-hover:scale-105"
                       sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
                     />
                   ) : (
@@ -58,7 +58,7 @@ export default async function VideosPage() {
                     </div>
                   )}
                   {video.duration && (
-                    <span className="absolute bottom-1 right-1 bg-black/80 text-white text-xs px-1 rounded">
+                    <span className="absolute bottom-1 right-1 bg-black/80 text-white text-xs px-1 rounded-md">
                       {video.duration}
                     </span>
                   )}

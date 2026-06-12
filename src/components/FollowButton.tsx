@@ -59,7 +59,7 @@ export default function FollowButton({
       onMouseLeave={() => setHovered(false)}
       disabled={loading}
       aria-busy={loading}
-      className={`text-xs font-semibold px-4 py-1.5 rounded border transition-colors min-w-[5.5rem] disabled:opacity-60 disabled:cursor-wait ${
+      className={`text-xs font-semibold px-4 py-1.5 rounded-md border transition-colors min-w-[5.5rem] disabled:opacity-60 disabled:cursor-wait ${
         following
           ? hovered && !loading
             ? "border-red-500 text-red-400 bg-red-500/10"

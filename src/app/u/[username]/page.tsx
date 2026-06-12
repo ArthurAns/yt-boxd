@@ -109,7 +109,7 @@ export default async function ProfilePage({
           {isOwn ? (
             <Link
               href="/settings"
-              className="text-xs text-[var(--text-muted)] border border-[var(--border)] rounded px-3 py-1.5 hover:text-white hover:border-white/30 transition-colors flex-shrink-0"
+              className="text-xs text-[var(--text-muted)] border border-[var(--border)] rounded-md px-3 py-1.5 hover:text-white hover:border-white/30 transition-colors flex-shrink-0"
             >
               Edit profile
             </Link>
@@ -182,15 +182,17 @@ export default async function ProfilePage({
                   className="group relative w-36 flex-shrink-0"
                 >
                   {video.thumbnailUrl ? (
-                    <Image
-                      src={video.thumbnailUrl}
-                      alt={video.title}
-                      width={144}
-                      height={81}
-                      className="rounded w-full object-cover group-hover:opacity-80 transition-opacity"
-                    />
+                    <div className="overflow-hidden rounded-md">
+                      <Image
+                        src={video.thumbnailUrl}
+                        alt={video.title}
+                        width={144}
+                        height={81}
+                        className="w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
+                    </div>
                   ) : (
-                    <div className="w-36 h-20 bg-[var(--bg-card)] rounded flex items-center justify-center text-[var(--text-dim)] text-xs">
+                    <div className="w-36 h-20 bg-[var(--bg-card)] rounded-md flex items-center justify-center text-[var(--text-dim)] text-xs">
                       No thumb
                     </div>
                   )}
@@ -218,7 +220,7 @@ export default async function ProfilePage({
           </div>
 
           {recentEntries.length === 0 ? (
-            <div className="text-center py-12 space-y-3 bg-[var(--bg-card)] rounded-lg">
+            <div className="text-center py-12 space-y-3 bg-[var(--bg-card)] border border-white/[0.06] rounded-lg">
               <div className="text-4xl" aria-hidden="true">
                 🎬
               </div>
@@ -230,7 +232,7 @@ export default async function ProfilePage({
               {isOwn && (
                 <Link
                   href="/log"
-                  className="inline-flex items-center gap-1.5 bg-[var(--accent-green)] hover:bg-[var(--accent-green-dark)] text-black font-bold px-4 py-2 rounded text-sm transition-colors"
+                  className="inline-flex items-center gap-1.5 bg-[var(--accent-green)] hover:bg-[var(--accent-green-dark)] text-black font-bold px-4 py-2 rounded-md text-sm transition-colors"
                 >
                   + Log your first watch
                 </Link>
@@ -241,16 +243,16 @@ export default async function ProfilePage({
               {recentEntries.map((entry) => (
                 <div
                   key={entry.id}
-                  className="flex gap-3 bg-[var(--bg-card)] rounded-lg p-3 items-start"
+                  className="flex gap-3 bg-[var(--bg-card)] border border-white/[0.06] rounded-lg p-3 items-start"
                 >
                   {entry.video.thumbnailUrl ? (
-                    <Link href={`/video/${entry.video.youtubeId}`} className="flex-shrink-0">
+                    <Link href={`/video/${entry.video.youtubeId}`} className="flex-shrink-0 block overflow-hidden rounded-md">
                       <Image
                         src={entry.video.thumbnailUrl}
                         alt={entry.video.title}
                         width={96}
                         height={54}
-                        className="rounded object-cover hover:opacity-80 transition-opacity"
+                        className="object-cover transition-transform duration-300 hover:scale-105"
                       />
                     </Link>
                   ) : null}
@@ -310,10 +312,10 @@ export default async function ProfilePage({
                 <Link
                   key={list.id}
                   href={`/lists/${list.id}`}
-                  className="bg-[var(--bg-card)] rounded-lg p-3 hover:bg-[var(--bg-secondary)] transition-colors group space-y-2"
+                  className="bg-[var(--bg-card)] border border-white/[0.06] rounded-lg p-3 hover:bg-[var(--bg-secondary)] hover:border-white/[0.14] transition-colors group space-y-2"
                 >
                   {list.items.length > 0 && (
-                    <div className="flex gap-0.5 overflow-hidden rounded">
+                    <div className="flex gap-0.5 overflow-hidden rounded-md">
                       {list.items.map(({ video }, i) =>
                         video.thumbnailUrl ? (
                           <div key={i} className="relative flex-1 aspect-video min-w-0">

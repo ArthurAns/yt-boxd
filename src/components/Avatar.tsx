@@ -1,4 +1,7 @@
+"use client";
+
 import Image from "next/image";
+import { useState } from "react";
 
 const PALETTE = [
   "#3d5a80", "#5c4a7f", "#7f4a5c", "#3d7f5c",
@@ -22,13 +25,16 @@ export default function Avatar({
   size?: number;
   className?: string;
 }) {
-  if (src) {
+  const [failed, setFailed] = useState(false);
+
+  if (src && !failed) {
     return (
       <Image
         src={src}
         alt={name ?? "avatar"}
         width={size}
         height={size}
+        onError={() => setFailed(true)}
         className={`rounded-full flex-shrink-0 ${className}`}
       />
     );
