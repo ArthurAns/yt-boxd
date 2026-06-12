@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
+import Avatar from "@/components/Avatar";
 
 type Video = { youtubeId: string; title: string; thumbnailUrl: string | null; channelName?: string | null };
 
@@ -103,19 +104,7 @@ export default function SettingsForm({
 
         {/* Avatar (display only — managed by Google) */}
         <div className="flex items-center gap-4">
-          {initial.image ? (
-            <Image
-              src={initial.image}
-              alt={initial.name}
-              width={56}
-              height={56}
-              className="rounded-full"
-            />
-          ) : (
-            <div className="w-14 h-14 rounded-full bg-[var(--bg-secondary)] flex items-center justify-center text-xl text-[var(--text-muted)]">
-              {initial.name[0]?.toUpperCase() ?? "?"}
-            </div>
-          )}
+          <Avatar src={initial.image} name={initial.name} size={56} />
           <div>
             <p className="font-medium">{initial.name}</p>
             <p className="text-xs text-[var(--text-dim)]">

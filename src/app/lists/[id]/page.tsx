@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import AddToListForm from "./AddToListForm";
 import ListEditForm from "./ListEditForm";
+import Avatar from "@/components/Avatar";
 
 export async function generateMetadata({
   params,
@@ -93,19 +94,7 @@ export default async function ListPage({
 
           {/* Author */}
           <div className="flex items-center gap-2">
-            {list.user.image ? (
-              <Image
-                src={list.user.image}
-                alt={list.user.name ?? ""}
-                width={22}
-                height={22}
-                className="rounded-full"
-              />
-            ) : (
-              <div className="w-5 h-5 rounded-full bg-[var(--bg-card)] flex items-center justify-center text-[10px] text-[var(--text-muted)]">
-                {(list.user.name ?? "?")[0].toUpperCase()}
-              </div>
-            )}
+            <Avatar src={list.user.image} name={list.user.name} size={22} />
             <Link
               href={`/u/${list.user.username ?? list.user.name}`}
               className="text-sm text-[var(--text-muted)] hover:text-white transition-colors"

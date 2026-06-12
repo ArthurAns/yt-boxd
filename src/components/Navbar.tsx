@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { useSession, signIn, signOut } from "next-auth/react";
+import Avatar from "@/components/Avatar";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
@@ -135,19 +135,7 @@ export default function Navbar() {
                   aria-expanded={menuOpen}
                   className="flex items-center gap-2 text-sm text-[var(--text-muted)] hover:text-white"
                 >
-                  {user.image ? (
-                    <Image
-                      src={user.image}
-                      alt={user.name ?? "avatar"}
-                      width={28}
-                      height={28}
-                      className="rounded-full"
-                    />
-                  ) : (
-                    <span className="w-7 h-7 rounded-full bg-[var(--border)] flex items-center justify-center text-xs">
-                      {user.name?.[0] ?? "?"}
-                    </span>
-                  )}
+                  <Avatar src={user.image} name={user.name} size={28} />
                   <span className="hidden sm:block font-medium uppercase tracking-wider text-xs">
                     {user.name}
                   </span>

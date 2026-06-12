@@ -1,8 +1,9 @@
 import Link from "next/link";
-import Image from "next/image";
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
+import Avatar from "@/components/Avatar";
+import Image from "next/image";
 
 export const metadata: Metadata = { title: "Lists" };
 
@@ -107,19 +108,7 @@ export default async function ListsPage() {
                 </div>
 
                 <div className="flex items-center gap-2">
-                  {list.user.image ? (
-                    <Image
-                      src={list.user.image}
-                      alt={list.user.name ?? ""}
-                      width={18}
-                      height={18}
-                      className="rounded-full"
-                    />
-                  ) : (
-                    <div className="w-4 h-4 rounded-full bg-[var(--bg-secondary)] flex items-center justify-center text-[8px] text-[var(--text-muted)]">
-                      {(list.user.name ?? "?")[0].toUpperCase()}
-                    </div>
-                  )}
+                  <Avatar src={list.user.image} name={list.user.name} size={18} />
                   <span className="text-xs text-[var(--text-muted)]">
                     {list.user.username ?? list.user.name}
                   </span>

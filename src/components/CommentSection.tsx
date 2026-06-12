@@ -1,8 +1,8 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import Avatar from "@/components/Avatar";
 
 type Comment = {
   id: string;
@@ -78,21 +78,9 @@ export default function CommentSection({
           {/* Existing comments */}
           {comments.map((comment) => (
             <div key={comment.id} className="flex gap-2 items-start group">
-              {comment.user.image ? (
-                <Link href={`/u/${comment.user.username ?? comment.user.name}`}>
-                  <Image
-                    src={comment.user.image}
-                    alt={comment.user.name ?? ""}
-                    width={22}
-                    height={22}
-                    className="rounded-full flex-shrink-0 hover:opacity-80"
-                  />
-                </Link>
-              ) : (
-                <div className="w-[22px] h-[22px] rounded-full bg-[var(--bg-secondary)] flex items-center justify-center text-[9px] text-[var(--text-muted)] flex-shrink-0">
-                  {(comment.user.name ?? "?")[0].toUpperCase()}
-                </div>
-              )}
+              <Link href={`/u/${comment.user.username ?? comment.user.name}`}>
+                <Avatar src={comment.user.image} name={comment.user.name} size={22} className="hover:opacity-80 transition-opacity" />
+              </Link>
               <div className="flex-1 min-w-0">
                 <span className="text-xs font-medium text-[var(--text-muted)] mr-1.5">
                   {comment.user.username ?? comment.user.name}

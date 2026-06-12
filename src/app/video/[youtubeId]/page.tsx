@@ -9,6 +9,7 @@ import WatchlistButton from "@/components/WatchlistButton";
 import LikeButton from "@/components/LikeButton";
 import CommentSection from "@/components/CommentSection";
 import StarDisplay from "@/components/StarDisplay";
+import Avatar from "@/components/Avatar";
 import { formatDate } from "@/lib/format";
 
 // ─── Metadata ────────────────────────────────────────────────────────────────
@@ -254,24 +255,9 @@ export default async function VideoPage({
                   className="bg-[var(--bg-card)] rounded-lg p-4 space-y-2"
                 >
                   <div className="flex items-center gap-3">
-                    {entry.user.image ? (
-                      <Link href={`/u/${entry.user.username ?? entry.user.name}`}>
-                        <Image
-                          src={entry.user.image}
-                          alt={entry.user.name ?? ""}
-                          width={32}
-                          height={32}
-                          className="rounded-full hover:opacity-80 transition-opacity"
-                        />
-                      </Link>
-                    ) : (
-                      <Link
-                        href={`/u/${entry.user.username ?? entry.user.name}`}
-                        className="w-8 h-8 rounded-full bg-[var(--bg-secondary)] flex items-center justify-center text-xs text-[var(--text-muted)] hover:opacity-80"
-                      >
-                        {(entry.user.name ?? "?")[0].toUpperCase()}
-                      </Link>
-                    )}
+                    <Link href={`/u/${entry.user.username ?? entry.user.name}`}>
+                      <Avatar src={entry.user.image} name={entry.user.name} size={32} className="hover:opacity-80 transition-opacity" />
+                    </Link>
                     <div className="flex-1 min-w-0">
                       <Link
                         href={`/u/${entry.user.username ?? entry.user.name}`}
@@ -333,19 +319,7 @@ export default async function VideoPage({
                   href={`/u/${entry.user.username ?? entry.user.name}`}
                   className="flex items-center gap-2 bg-[var(--bg-card)] rounded-full pl-1 pr-3 py-1 hover:bg-[var(--bg-secondary)] transition-colors text-sm"
                 >
-                  {entry.user.image ? (
-                    <Image
-                      src={entry.user.image}
-                      alt={entry.user.name ?? ""}
-                      width={24}
-                      height={24}
-                      className="rounded-full"
-                    />
-                  ) : (
-                    <span className="w-6 h-6 rounded-full bg-[var(--bg-secondary)] flex items-center justify-center text-xs text-[var(--text-muted)]">
-                      {(entry.user.name ?? "?")[0].toUpperCase()}
-                    </span>
-                  )}
+                  <Avatar src={entry.user.image} name={entry.user.name} size={24} />
                   <span className="text-[var(--text-muted)] text-xs">
                     {entry.user.username ?? entry.user.name}
                   </span>

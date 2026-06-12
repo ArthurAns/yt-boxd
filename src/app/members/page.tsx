@@ -1,7 +1,7 @@
 import Link from "next/link";
-import Image from "next/image";
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
+import Avatar from "@/components/Avatar";
 
 export const metadata: Metadata = { title: "Members" };
 
@@ -37,19 +37,7 @@ export default async function MembersPage() {
                 href={`/u/${member.username}`}
                 className="flex items-center gap-3 bg-[var(--bg-card)] rounded-lg p-4 hover:bg-[var(--bg-secondary)] transition-colors group"
               >
-                {member.image ? (
-                  <Image
-                    src={member.image}
-                    alt={member.name ?? member.username ?? ""}
-                    width={44}
-                    height={44}
-                    className="rounded-full flex-shrink-0"
-                  />
-                ) : (
-                  <div className="w-11 h-11 rounded-full bg-[var(--bg-secondary)] flex items-center justify-center text-[var(--text-muted)] text-sm font-medium flex-shrink-0">
-                    {(member.name ?? member.username ?? "?")[0].toUpperCase()}
-                  </div>
-                )}
+                <Avatar src={member.image} name={member.name ?? member.username} size={44} />
                 <div className="min-w-0 flex-1">
                   <p className="font-medium text-sm truncate group-hover:text-[var(--accent-green)] transition-colors">
                     {member.name ?? member.username}

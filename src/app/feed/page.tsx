@@ -6,6 +6,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import LikeButton from "@/components/LikeButton";
 import StarDisplay from "@/components/StarDisplay";
+import Avatar from "@/components/Avatar";
 import { formatDate } from "@/lib/format";
 
 export const metadata: Metadata = { title: "Feed" };
@@ -98,21 +99,9 @@ export default async function FeedPage() {
               >
                 {/* User row */}
                 <div className="flex items-center gap-2">
-                  {entry.user.image ? (
-                    <Link href={`/u/${entry.user.username ?? entry.user.name}`}>
-                      <Image
-                        src={entry.user.image}
-                        alt={entry.user.name ?? ""}
-                        width={28}
-                        height={28}
-                        className="rounded-full hover:opacity-80 transition-opacity"
-                      />
-                    </Link>
-                  ) : (
-                    <div className="w-7 h-7 rounded-full bg-[var(--bg-secondary)] flex items-center justify-center text-xs text-[var(--text-muted)]">
-                      {(entry.user.name ?? "?")[0].toUpperCase()}
-                    </div>
-                  )}
+                  <Link href={`/u/${entry.user.username ?? entry.user.name}`}>
+                    <Avatar src={entry.user.image} name={entry.user.name} size={28} className="hover:opacity-80 transition-opacity" />
+                  </Link>
                   <div className="flex items-baseline gap-1.5 flex-wrap text-sm">
                     <Link
                       href={`/u/${entry.user.username ?? entry.user.name}`}

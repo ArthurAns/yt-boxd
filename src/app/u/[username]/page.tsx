@@ -6,6 +6,7 @@ import { auth } from "@/lib/auth";
 import FollowButton from "@/components/FollowButton";
 import StarDisplay from "@/components/StarDisplay";
 import AddToListButton from "@/components/AddToListButton";
+import Avatar from "@/components/Avatar";
 import { formatDate } from "@/lib/format";
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
@@ -84,19 +85,7 @@ export default async function ProfilePage({
       {/* ── Profile header ── */}
       <div className="bg-[var(--bg-secondary)] border-b border-[var(--border)]">
         <div className="mx-auto max-w-5xl px-4 py-8 flex items-end gap-6">
-          {profileUser.image ? (
-            <Image
-              src={profileUser.image}
-              alt={profileUser.name ?? username}
-              width={80}
-              height={80}
-              className="rounded-full flex-shrink-0"
-            />
-          ) : (
-            <div className="w-20 h-20 rounded-full bg-[var(--bg-card)] flex items-center justify-center text-2xl text-[var(--text-muted)] flex-shrink-0">
-              {(profileUser.name ?? username)[0].toUpperCase()}
-            </div>
-          )}
+          <Avatar src={profileUser.image} name={profileUser.name ?? username} size={80} />
           <div className="flex-1 min-w-0">
             <h1 className="text-2xl font-bold truncate">
               {profileUser.name ?? username}
