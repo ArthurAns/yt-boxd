@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import { SessionProvider } from "@/components/SessionProvider";
+import { ToastProvider } from "@/components/Toast";
 import { auth } from "@/lib/auth";
 
 export const metadata: Metadata = {
@@ -23,11 +24,13 @@ export default async function RootLayout({
     <html lang="en" className="dark">
       <body className="min-h-screen flex flex-col">
         <SessionProvider session={session}>
-          <Navbar />
-          <main className="flex-1">{children}</main>
-          <footer className="border-t border-[var(--border)] py-6 text-center text-[var(--text-dim)] text-xs">
-            YTBoxd · built for video lovers
-          </footer>
+          <ToastProvider>
+            <Navbar />
+            <main className="flex-1">{children}</main>
+            <footer className="border-t border-[var(--border)] py-6 text-center text-[var(--text-dim)] text-xs">
+              YTBoxd · built for video lovers
+            </footer>
+          </ToastProvider>
         </SessionProvider>
       </body>
     </html>

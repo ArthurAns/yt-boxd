@@ -2,20 +2,9 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
+import StarDisplay from "@/components/StarDisplay";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
-
-function StarDisplay({ rating }: { rating: number | null }) {
-  if (!rating) return null;
-  const full = Math.floor(rating);
-  const half = rating % 1 >= 0.5;
-  return (
-    <span className="text-[var(--star-color)] text-xs">
-      {"★".repeat(full)}
-      {half ? "½" : ""}
-    </span>
-  );
-}
 
 const MONTHS = [
   "Jan", "Feb", "Mar", "Apr", "May", "Jun",
@@ -153,12 +142,12 @@ export default async function DiaryPage({
                           {/* Rating + badges */}
                           <div className="flex items-center gap-2 flex-shrink-0">
                             {entry.rewatch && (
-                              <span className="text-[var(--text-muted)] text-xs" title="Rewatch">
+                              <span className="text-[var(--text-muted)] text-xs" title="Rewatch" role="img" aria-label="Rewatch">
                                 ↺
                               </span>
                             )}
                             {entry.liked && (
-                              <span className="text-red-400 text-xs" title="Liked">
+                              <span className="text-red-400 text-xs" title="Liked" role="img" aria-label="Liked">
                                 ♥
                               </span>
                             )}

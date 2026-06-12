@@ -4,28 +4,8 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import FollowButton from "@/components/FollowButton";
-
-// ─── Helpers ─────────────────────────────────────────────────────────────────
-
-function StarDisplay({ rating }: { rating: number | null }) {
-  if (!rating) return null;
-  const full = Math.floor(rating);
-  const half = rating % 1 >= 0.5;
-  return (
-    <span className="text-[var(--star-color)] text-xs tracking-tight">
-      {"★".repeat(full)}
-      {half ? "½" : ""}
-    </span>
-  );
-}
-
-function formatDate(d: Date) {
-  return new Date(d).toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
-}
+import StarDisplay from "@/components/StarDisplay";
+import { formatDate } from "@/lib/format";
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
@@ -114,10 +94,19 @@ export default async function ProfilePage({
               {profileUser.name ?? username}
             </h1>
             <p className="text-sm text-[var(--text-muted)]">@{username}</p>
-            {profileUser.bio && (
+            {profileUser.bio ? (
               <p className="mt-2 text-sm text-[var(--text-dim)] max-w-lg">
                 {profileUser.bio}
               </p>
+            ) : (
+              isOwn && (
+                <Link
+                  href="/settings"
+                  className="mt-2 inline-block text-sm text-[var(--accent-green)] hover:underline"
+                >
+                  Add a bio →
+                </Link>
+              )
             )}
           </div>
           {isOwn ? (
@@ -130,6 +119,7 @@ export default async function ProfilePage({
           ) : (
             <FollowButton
               targetUserId={profileUser.id}
+              targetName={`@${username}`}
               initialFollowing={isFollowing as boolean}
               isLoggedIn={!!currentUserId}
             />
@@ -142,18 +132,33 @@ export default async function ProfilePage({
             { label: "Videos", value: totalWatched },
             { label: "This year", value: thisYearCount },
             { label: "Ratings", value: totalRatings },
-            { label: "Followers", value: followerCount },
-            { label: "Following", value: followingCount },
-          ].map(({ label, value }) => (
-            <div key={label} className="text-center">
-              <div className="text-white font-bold text-lg leading-none">
-                {value}
+            { label: "Followers", value: followerCount, href: `/u/${username}/followers` },
+            { label: "Following", value: followingCount, href: `/u/${username}/following` },
+          ].map(({ label, value, href }) => {
+            const stat = (
+              <>
+                <div className="text-white font-bold text-lg leading-none">
+                  {value}
+                </div>
+                <div className="text-[var(--text-muted)] text-xs mt-0.5 uppercase tracking-wide">
+                  {label}
+                </div>
+              </>
+            );
+            return href ? (
+              <Link
+                key={label}
+                href={href}
+                className="text-center hover:opacity-80 transition-opacity"
+              >
+                {stat}
+              </Link>
+            ) : (
+              <div key={label} className="text-center">
+                {stat}
               </div>
-              <div className="text-[var(--text-muted)] text-xs mt-0.5 uppercase tracking-wide">
-                {label}
-              </div>
-            </div>
-          ))}
+            );
+          })}
           <div className="ml-auto flex gap-4 text-xs text-[var(--text-muted)] uppercase tracking-wide">
             <Link href={`/u/${username}/diary`} className="hover:text-white transition-colors">
               Diary
@@ -216,14 +221,24 @@ export default async function ProfilePage({
           </div>
 
           {recentEntries.length === 0 ? (
-            <p className="text-sm text-[var(--text-dim)]">
-              No videos logged yet.{" "}
+            <div className="text-center py-12 space-y-3 bg-[var(--bg-card)] rounded-lg">
+              <div className="text-4xl" aria-hidden="true">
+                🎬
+              </div>
+              <p className="text-sm text-[var(--text-muted)]">
+                {isOwn
+                  ? "You haven't logged any videos yet."
+                  : `${profileUser.name ?? username} hasn't logged any videos yet.`}
+              </p>
               {isOwn && (
-                <Link href="/log" className="text-[var(--accent-green)] hover:underline">
-                  Log your first watch
+                <Link
+                  href="/log"
+                  className="inline-flex items-center gap-1.5 bg-[var(--accent-green)] hover:bg-[var(--accent-green-dark)] text-black font-bold px-4 py-2 rounded text-sm transition-colors"
+                >
+                  + Log your first watch
                 </Link>
               )}
-            </p>
+            </div>
           ) : (
             <div className="space-y-3">
               {recentEntries.map((entry) => (
@@ -255,10 +270,10 @@ export default async function ProfilePage({
                       </span>
                       {entry.rating && <StarDisplay rating={entry.rating} />}
                       {entry.liked && (
-                        <span className="text-red-400 text-xs">♥</span>
+                        <span className="text-red-400 text-xs" role="img" aria-label="Liked">♥</span>
                       )}
                       {entry.rewatch && (
-                        <span className="text-[var(--text-muted)] text-xs">↺</span>
+                        <span className="text-[var(--text-muted)] text-xs" role="img" aria-label="Rewatch">↺</span>
                       )}
                     </div>
                     {entry.review && (

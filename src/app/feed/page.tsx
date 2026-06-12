@@ -5,28 +5,10 @@ import type { Metadata } from "next";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import LikeButton from "@/components/LikeButton";
+import StarDisplay from "@/components/StarDisplay";
+import { formatDate } from "@/lib/format";
 
 export const metadata: Metadata = { title: "Feed" };
-
-function StarDisplay({ rating }: { rating: number | null }) {
-  if (!rating) return null;
-  const full = Math.floor(rating);
-  const half = rating % 1 >= 0.5;
-  return (
-    <span className="text-[var(--star-color)] text-xs tracking-tight">
-      {"★".repeat(full)}
-      {half ? "½" : ""}
-    </span>
-  );
-}
-
-function formatDate(d: Date) {
-  return new Date(d).toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
-}
 
 export default async function FeedPage() {
   const session = await auth();
@@ -49,13 +31,17 @@ export default async function FeedPage() {
           </div>
         </div>
         <div className="mx-auto max-w-2xl px-4 py-20 text-center space-y-4">
-          <p className="text-[var(--text-muted)]">Your feed is empty.</p>
+          <div className="text-5xl" aria-hidden="true">
+            📺
+          </div>
+          <p className="text-[var(--text-muted)] font-medium">Your feed is empty.</p>
           <p className="text-sm text-[var(--text-dim)]">
-            Follow some members to see their activity here.
+            Follow some members to see what they&apos;re watching, rating and
+            reviewing — right here.
           </p>
           <Link
             href="/members"
-            className="inline-block text-[var(--accent-green)] hover:underline text-sm"
+            className="inline-flex items-center gap-1.5 bg-[var(--accent-green)] hover:bg-[var(--accent-green-dark)] text-black font-bold px-4 py-2 rounded text-sm transition-colors"
           >
             Find people to follow →
           </Link>
@@ -172,8 +158,12 @@ export default async function FeedPage() {
                     )}
                     <div className="flex items-center gap-2 flex-wrap">
                       {entry.rating && <StarDisplay rating={entry.rating} />}
-                      {entry.liked && <span className="text-red-400 text-xs">♥</span>}
-                      {entry.rewatch && <span className="text-[var(--text-muted)] text-xs" title="Rewatch">↺</span>}
+                      {entry.liked && (
+                        <span className="text-red-400 text-xs" role="img" aria-label="Liked">♥</span>
+                      )}
+                      {entry.rewatch && (
+                        <span className="text-[var(--text-muted)] text-xs" title="Rewatch" role="img" aria-label="Rewatch">↺</span>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -194,7 +184,7 @@ export default async function FeedPage() {
                     isLoggedIn={true}
                   />
                   <Link
-                    href={`/video/${entry.video.youtubeId}`}
+                    href={`/video/${entry.video.youtubeId}#comments`}
                     className="text-xs text-[var(--text-dim)] hover:text-[var(--text-muted)] transition-colors"
                   >
                     {entry._count.comments > 0

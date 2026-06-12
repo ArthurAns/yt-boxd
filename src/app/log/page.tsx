@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { Suspense } from "react";
+import { useToast } from "@/components/Toast";
 
 // ─── Star Rating component ────────────────────────────────────────────────────
 
@@ -94,6 +95,7 @@ function LogForm() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const toast = useToast();
 
   // Form state
   const [url, setUrl] = useState(searchParams.get("v") ?? "");
@@ -185,6 +187,7 @@ function LogForm() {
 
       setSuccess(true);
       setQuotaNotice(data.quotaExceeded ?? false);
+      toast("Added to your diary ✓");
     } finally {
       setSubmitting(false);
     }
@@ -331,7 +334,7 @@ function LogForm() {
                 className="w-4 h-4 accent-[var(--accent-green)]"
               />
               <span className="text-sm">
-                <span className="text-red-400 mr-1">♥</span> Like
+                <span className="text-red-400 mr-1" aria-hidden="true">♥</span> Like
               </span>
             </label>
             <label className="flex items-center gap-2 cursor-pointer select-none">
@@ -342,7 +345,7 @@ function LogForm() {
                 className="w-4 h-4 accent-[var(--accent-green)]"
               />
               <span className="text-sm">
-                <span className="mr-1">↺</span> Rewatch
+                <span className="mr-1" aria-hidden="true">↺</span> Rewatch
               </span>
             </label>
           </div>

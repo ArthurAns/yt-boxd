@@ -3,7 +3,8 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useSession, signIn, signOut } from "next-auth/react";
-import { useState } from "react";
+import { usePathname } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 
 type UserWithUsername = {
   name?: string | null;
@@ -13,38 +14,107 @@ type UserWithUsername = {
   username?: string | null;
 };
 
+function NavLink({
+  href,
+  children,
+  onClick,
+  className = "",
+}: {
+  href: string;
+  children: React.ReactNode;
+  onClick?: () => void;
+  className?: string;
+}) {
+  const pathname = usePathname();
+  const active = pathname === href || pathname.startsWith(`${href}/`);
+  return (
+    <Link
+      href={href}
+      onClick={onClick}
+      aria-current={active ? "page" : undefined}
+      className={`transition-colors ${
+        active ? "text-[var(--accent-green)]" : "hover:text-white"
+      } ${className}`}
+    >
+      {children}
+    </Link>
+  );
+}
+
 export default function Navbar() {
   const { data: session } = useSession();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const pathname = usePathname();
   const user = session?.user as UserWithUsername | undefined;
+
+  // Close the user dropdown on outside click or Escape
+  useEffect(() => {
+    if (!menuOpen) return;
+    function onPointerDown(e: MouseEvent | TouchEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setMenuOpen(false);
+      }
+    }
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") setMenuOpen(false);
+    }
+    document.addEventListener("mousedown", onPointerDown);
+    document.addEventListener("touchstart", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", onPointerDown);
+      document.removeEventListener("touchstart", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [menuOpen]);
+
+  // Close both menus whenever the route changes (adjust state during render)
+  const [prevPathname, setPrevPathname] = useState(pathname);
+  if (pathname !== prevPathname) {
+    setPrevPathname(pathname);
+    setMobileNavOpen(false);
+    setMenuOpen(false);
+  }
 
   return (
     <nav className="sticky top-0 z-50 border-b border-[var(--border)] bg-[var(--bg-secondary)]">
       <div className="mx-auto max-w-6xl flex items-center justify-between px-4 h-14">
-        {/* Logo */}
-        <Link
-          href="/"
-          className="text-[var(--accent-green)] font-bold text-xl tracking-tight"
-        >
-          YTBoxd
-        </Link>
+        <div className="flex items-center gap-3">
+          {/* Hamburger (mobile only) */}
+          <button
+            onClick={() => setMobileNavOpen((v) => !v)}
+            aria-label={mobileNavOpen ? "Close menu" : "Open menu"}
+            aria-expanded={mobileNavOpen}
+            className="md:hidden flex flex-col justify-center gap-[5px] w-8 h-8 text-[var(--text-muted)] hover:text-white"
+          >
+            {mobileNavOpen ? (
+              <span className="text-xl leading-none mx-auto">×</span>
+            ) : (
+              <>
+                <span className="block h-0.5 w-5 bg-current mx-auto rounded" />
+                <span className="block h-0.5 w-5 bg-current mx-auto rounded" />
+                <span className="block h-0.5 w-5 bg-current mx-auto rounded" />
+              </>
+            )}
+          </button>
+
+          {/* Logo */}
+          <Link
+            href="/"
+            className="text-[var(--accent-green)] font-bold text-xl tracking-tight"
+          >
+            YTBoxd
+          </Link>
+        </div>
 
         {/* Centre nav links (desktop) */}
         <div className="hidden md:flex items-center gap-6 text-sm font-medium text-[var(--text-muted)] uppercase tracking-wider">
-          {user && (
-            <Link href="/feed" className="hover:text-white transition-colors">
-              Feed
-            </Link>
-          )}
-          <Link href="/videos" className="hover:text-white transition-colors">
-            Videos
-          </Link>
-          <Link href="/lists" className="hover:text-white transition-colors">
-            Lists
-          </Link>
-          <Link href="/members" className="hover:text-white transition-colors">
-            Members
-          </Link>
+          {user && <NavLink href="/feed">Feed</NavLink>}
+          <NavLink href="/videos">Videos</NavLink>
+          <NavLink href="/lists">Lists</NavLink>
+          <NavLink href="/members">Members</NavLink>
         </div>
 
         {/* Right side */}
@@ -53,14 +123,16 @@ export default function Navbar() {
             <>
               <Link
                 href="/log"
-                className="hidden sm:inline-flex items-center gap-1 bg-[var(--accent-green)] text-black text-xs font-bold px-3 py-1.5 rounded hover:bg-[var(--accent-green-dark)] transition-colors"
+                className="inline-flex items-center gap-1 bg-[var(--accent-green)] text-black text-xs font-bold px-3 py-1.5 rounded hover:bg-[var(--accent-green-dark)] transition-colors"
               >
                 + LOG
               </Link>
 
-              <div className="relative">
+              <div className="relative" ref={menuRef}>
                 <button
                   onClick={() => setMenuOpen((v) => !v)}
+                  aria-haspopup="menu"
+                  aria-expanded={menuOpen}
                   className="flex items-center gap-2 text-sm text-[var(--text-muted)] hover:text-white"
                 >
                   {user.image ? (
@@ -136,6 +208,44 @@ export default function Navbar() {
           )}
         </div>
       </div>
+
+      {/* Mobile nav panel */}
+      {mobileNavOpen && (
+        <div className="md:hidden border-t border-[var(--border)] bg-[var(--bg-secondary)] animate-fade-in">
+          <div className="px-4 py-2 flex flex-col text-sm font-medium text-[var(--text-muted)] uppercase tracking-wider">
+            {user && (
+              <NavLink
+                href="/feed"
+                className="py-2.5 border-b border-[var(--border)]/40"
+                onClick={() => setMobileNavOpen(false)}
+              >
+                Feed
+              </NavLink>
+            )}
+            <NavLink
+              href="/videos"
+              className="py-2.5 border-b border-[var(--border)]/40"
+              onClick={() => setMobileNavOpen(false)}
+            >
+              Videos
+            </NavLink>
+            <NavLink
+              href="/lists"
+              className="py-2.5 border-b border-[var(--border)]/40"
+              onClick={() => setMobileNavOpen(false)}
+            >
+              Lists
+            </NavLink>
+            <NavLink
+              href="/members"
+              className="py-2.5"
+              onClick={() => setMobileNavOpen(false)}
+            >
+              Members
+            </NavLink>
+          </div>
+        </div>
+      )}
     </nav>
   );
 }

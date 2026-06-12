@@ -8,6 +8,8 @@ import VideoEmbed from "@/components/VideoEmbed";
 import WatchlistButton from "@/components/WatchlistButton";
 import LikeButton from "@/components/LikeButton";
 import CommentSection from "@/components/CommentSection";
+import StarDisplay from "@/components/StarDisplay";
+import { formatDate } from "@/lib/format";
 
 // ─── Metadata ────────────────────────────────────────────────────────────────
 
@@ -26,26 +28,6 @@ export async function generateMetadata({
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
-
-function StarDisplay({ rating }: { rating: number | null }) {
-  if (!rating) return null;
-  const full = Math.floor(rating);
-  const half = rating % 1 >= 0.5;
-  return (
-    <span className="text-[var(--star-color)] tracking-tight">
-      {"★".repeat(full)}
-      {half ? "½" : ""}
-    </span>
-  );
-}
-
-function formatDate(d: Date) {
-  return new Date(d).toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
-}
 
 function formatCount(n: bigint | number | null) {
   if (n == null) return null;
@@ -197,13 +179,13 @@ export default async function VideoPage({
                         {formatDate(ownEntry.watchedDate)}
                       </span>
                       {ownEntry.rating && (
-                        <StarDisplay rating={ownEntry.rating} />
+                        <StarDisplay rating={ownEntry.rating} className="" />
                       )}
                       {ownEntry.liked && (
-                        <span className="text-red-400 text-xs">♥</span>
+                        <span className="text-red-400 text-xs" role="img" aria-label="Liked">♥</span>
                       )}
                       {ownEntry.rewatch && (
-                        <span className="text-[var(--text-muted)] text-xs">↺</span>
+                        <span className="text-[var(--text-muted)] text-xs" role="img" aria-label="Rewatch">↺</span>
                       )}
                     </div>
                     <Link
@@ -261,7 +243,7 @@ export default async function VideoPage({
       <div className="mx-auto max-w-5xl px-4 py-8 space-y-10">
         {/* Reviews */}
         {reviewEntries.length > 0 && (
-          <section>
+          <section id="comments" className="scroll-mt-20">
             <h2 className="text-xs font-bold uppercase tracking-widest text-[var(--text-muted)] mb-4">
               Reviews
             </h2>
@@ -302,13 +284,13 @@ export default async function VideoPage({
                           {formatDate(entry.watchedDate)}
                         </span>
                         {entry.rating && (
-                          <StarDisplay rating={entry.rating} />
+                          <StarDisplay rating={entry.rating} className="" />
                         )}
                         {entry.liked && (
-                          <span className="text-red-400 text-xs">♥</span>
+                          <span className="text-red-400 text-xs" role="img" aria-label="Liked">♥</span>
                         )}
                         {entry.rewatch && (
-                          <span className="text-[var(--text-muted)] text-xs" title="Rewatch">
+                          <span className="text-[var(--text-muted)] text-xs" title="Rewatch" role="img" aria-label="Rewatch">
                             ↺
                           </span>
                         )}
@@ -368,7 +350,11 @@ export default async function VideoPage({
                     {entry.user.username ?? entry.user.name}
                   </span>
                   {entry.rating && (
-                    <span className="text-[var(--star-color)] text-xs">
+                    <span
+                      className="text-[var(--star-color)] text-xs"
+                      role="img"
+                      aria-label={`Rated ${entry.rating} out of 5 stars`}
+                    >
                       {entry.rating}★
                     </span>
                   )}
