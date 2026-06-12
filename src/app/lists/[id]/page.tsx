@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import AddToListForm from "./AddToListForm";
+import ListEditForm from "./ListEditForm";
 
 export async function generateMetadata({
   params,
@@ -67,17 +68,27 @@ export default async function ListPage({
             ← Lists
           </Link>
           <div className="flex items-start justify-between gap-4">
-            <div className="space-y-1">
+            <div className="space-y-1 min-w-0">
               <h1 className="text-2xl font-bold leading-snug">{list.name}</h1>
               {list.description && (
                 <p className="text-[var(--text-muted)] text-sm max-w-xl">{list.description}</p>
               )}
             </div>
-            {!list.isPublic && (
-              <span className="flex-shrink-0 text-xs border border-[var(--border)] text-[var(--text-muted)] px-2 py-0.5 rounded">
-                Private
-              </span>
-            )}
+            <div className="flex items-center gap-2 flex-shrink-0">
+              {!list.isPublic && (
+                <span className="text-xs border border-[var(--border)] text-[var(--text-muted)] px-2 py-0.5 rounded">
+                  Private
+                </span>
+              )}
+              {isOwner && (
+                <ListEditForm
+                  listId={list.id}
+                  initialName={list.name}
+                  initialDescription={list.description ?? ""}
+                  initialIsPublic={list.isPublic}
+                />
+              )}
+            </div>
           </div>
 
           {/* Author */}

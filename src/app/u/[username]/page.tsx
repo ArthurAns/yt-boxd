@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import FollowButton from "@/components/FollowButton";
 import StarDisplay from "@/components/StarDisplay";
+import AddToListButton from "@/components/AddToListButton";
 import { formatDate } from "@/lib/format";
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
@@ -30,7 +31,7 @@ export default async function ProfilePage({
   const isOwn = currentUserId === profileUser.id;
 
   // Stats + social counts + follow state
-  const [totalWatched, totalRatings, thisYearCount, followerCount, followingCount, isFollowing, userLists] = await Promise.all([
+  const [totalWatched, totalRatings, thisYearCount, followerCount, followingCount, isFollowing, userLists, ownListsForSelector] = await Promise.all([
     prisma.diaryEntry.count({ where: { userId: profileUser.id } }),
     prisma.diaryEntry.count({
       where: { userId: profileUser.id, rating: { not: null } },
@@ -61,6 +62,13 @@ export default async function ProfilePage({
         _count: { select: { items: true } },
       },
     }),
+    isOwn
+      ? prisma.list.findMany({
+          where: { userId: profileUser.id },
+          select: { id: true, name: true },
+          orderBy: { updatedAt: "desc" },
+        })
+      : Promise.resolve([] as { id: string; name: string }[]),
   ]);
 
   // Recent diary entries (last 8)
@@ -282,6 +290,12 @@ export default async function ProfilePage({
                       </p>
                     )}
                   </div>
+                  {isOwn && (
+                    <AddToListButton
+                      youtubeId={entry.video.youtubeId}
+                      lists={ownListsForSelector}
+                    />
+                  )}
                 </div>
               ))}
             </div>
