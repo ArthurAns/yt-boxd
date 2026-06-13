@@ -23,7 +23,7 @@ export default async function SettingsPage() {
     include: {
       video: { select: { youtubeId: true, title: true, thumbnailUrl: true, channelName: true } },
     },
-    orderBy: { watchedDate: "desc" },
+    orderBy: { watchedDate: { sort: "desc", nulls: "last" } },
   });
 
   // Current favorites

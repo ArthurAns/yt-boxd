@@ -101,7 +101,7 @@ model DiaryEntry {
   id          String   @id @default(cuid())
   userId      String
   videoId     String
-  watchedDate DateTime @db.Date
+  watchedDate DateTime? @db.Date  // null = undated interaction (not shown in diary)
   rating      Float?   // 0.5–5.0 in 0.5 increments, null = no rating
   liked       Boolean  @default(false)
   rewatch     Boolean  @default(false)
@@ -115,7 +115,7 @@ model DiaryEntry {
   likes    Like[]
   comments Comment[]
 
-  // A user can log the same video on the same date only once
+  // Dated entries: one per (user, video, date). Undated entries: enforced by partial index below.
   @@unique([userId, videoId, watchedDate])
 }
 

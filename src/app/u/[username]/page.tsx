@@ -32,15 +32,19 @@ export default async function ProfilePage({
   const isOwn = currentUserId === profileUser.id;
 
   // Stats + social counts + follow state
-  const [totalWatched, totalRatings, thisYearCount, followerCount, followingCount, isFollowing, userLists, ownListsForSelector] = await Promise.all([
-    prisma.diaryEntry.count({ where: { userId: profileUser.id } }),
+  const [totalWatchedRows, totalRatings, thisYearCount, followerCount, followingCount, isFollowing, userLists, ownListsForSelector] = await Promise.all([
+    prisma.diaryEntry.findMany({
+      where: { userId: profileUser.id },
+      select: { videoId: true },
+      distinct: ["videoId"],
+    }),
     prisma.diaryEntry.count({
       where: { userId: profileUser.id, rating: { not: null } },
     }),
     prisma.diaryEntry.count({
       where: {
         userId: profileUser.id,
-        watchedDate: { gte: new Date(`${new Date().getFullYear()}-01-01`) },
+        watchedDate: { not: null, gte: new Date(`${new Date().getFullYear()}-01-01`) },
       },
     }),
     prisma.follow.count({ where: { followingId: profileUser.id } }),
@@ -72,9 +76,11 @@ export default async function ProfilePage({
       : Promise.resolve([] as { id: string; name: string }[]),
   ]);
 
-  // Recent diary entries (last 8)
+  const totalWatched = totalWatchedRows.length;
+
+  // Recent diary entries (last 8, dated only)
   const recentEntries = await prisma.diaryEntry.findMany({
-    where: { userId: profileUser.id },
+    where: { userId: profileUser.id, watchedDate: { not: null } },
     orderBy: [{ watchedDate: "desc" }, { createdAt: "desc" }],
     take: 8,
     include: { video: true },

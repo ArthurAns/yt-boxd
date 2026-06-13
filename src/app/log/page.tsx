@@ -187,7 +187,7 @@ function LogForm() {
 
       setSuccess(true);
       setQuotaNotice(data.quotaExceeded ?? false);
-      toast("Added to your diary ✓");
+      toast("Review saved ✓");
     } finally {
       setSubmitting(false);
     }
@@ -206,9 +206,10 @@ function LogForm() {
       <div className="min-h-screen flex items-center justify-center px-4">
         <div className="bg-[var(--bg-card)] border border-white/[0.06] rounded-lg p-8 max-w-md w-full text-center space-y-4">
           <div className="text-4xl">✓</div>
-          <h2 className="text-xl font-bold text-[var(--accent-green)]">Logged!</h2>
+          <h2 className="text-xl font-bold text-[var(--accent-green)]">Review saved!</h2>
           {preview && (
             <p className="text-[var(--text-muted)] text-sm">
+              Your review of{" "}
               <span className="text-[var(--text-primary)] font-medium">
                 {preview.title}
               </span>{" "}
@@ -252,7 +253,7 @@ function LogForm() {
   return (
     <div className="min-h-screen py-12 px-4">
       <div className="max-w-xl mx-auto space-y-6">
-        <h1 className="text-2xl font-bold">Log a video</h1>
+        <h1 className="text-2xl font-bold">Write a review</h1>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* ── URL input ── */}
@@ -374,7 +375,7 @@ function LogForm() {
             disabled={submitting || !preview}
             className="w-full py-3 rounded-lg bg-[var(--accent-green)] hover:bg-[var(--accent-green-dark)] text-black font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {submitting ? "Saving…" : "Save to diary"}
+            {submitting ? "Saving…" : "Save review"}
           </button>
         </form>
       </div>

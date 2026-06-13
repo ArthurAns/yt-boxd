@@ -52,7 +52,7 @@ export default async function FeedPage() {
   }
 
   const entries = await prisma.diaryEntry.findMany({
-    where: { userId: { in: followingIds } },
+    where: { userId: { in: followingIds }, watchedDate: { not: null } },
     orderBy: { createdAt: "desc" },
     take: 40,
     include: {

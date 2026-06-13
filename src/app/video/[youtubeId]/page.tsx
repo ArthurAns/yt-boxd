@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import VideoEmbed from "@/components/VideoEmbed";
 import WatchlistButton from "@/components/WatchlistButton";
+import VideoQuickActions from "@/components/VideoQuickActions";
 import LikeButton from "@/components/LikeButton";
 import CommentSection from "@/components/CommentSection";
 import StarDisplay from "@/components/StarDisplay";
@@ -67,14 +68,22 @@ export default async function VideoPage({
 
   const currentUserId = (session?.user as { id?: string } | undefined)?.id;
 
-  // ── Watchlist state for current user ────────────────────────────────────
-  const inWatchlist = currentUserId
-    ? !!(await prisma.watchlistItem.findUnique({
-        where: { userId_videoId: { userId: currentUserId, videoId: video.id } },
-      }))
-    : false;
+  // ── Per-user state ───────────────────────────────────────────────────────
+  const [inWatchlist, undatedEntry] = await Promise.all([
+    currentUserId
+      ? prisma.watchlistItem.findUnique({
+          where: { userId_videoId: { userId: currentUserId, videoId: video.id } },
+        }).then(Boolean)
+      : Promise.resolve(false),
+    currentUserId
+      ? prisma.diaryEntry.findFirst({
+          where: { userId: currentUserId, videoId: video.id, watchedDate: null },
+          select: { id: true, liked: true, rating: true },
+        })
+      : Promise.resolve(null),
+  ]);
 
-  // ── Aggregate stats ──────────────────────────────────────────────────────
+  // ── Aggregate stats — all entries (dated + undated) ─────────────────────
   const watchCount = entries.length;
   const ratings = entries.map((e) => e.rating).filter((r): r is number => r !== null);
   const avgRating =
@@ -90,15 +99,14 @@ export default async function VideoPage({
   });
   const maxBucket = Math.max(...ratingBuckets.map((b) => b.count), 1);
 
-  // ── Current user's own entry (if any) ───────────────────────────────────
+  // ── Current user's most recent *dated* diary entry (for the review badge) ──
   const ownEntry = currentUserId
-    ? entries.find((e) => e.user.id === currentUserId) ?? null
+    ? entries.find((e) => e.user.id === currentUserId && e.watchedDate !== null) ?? null
     : null;
 
-  // ── Entries with reviews to show in the reviews section ─────────────────
-  const reviewEntries = entries.filter((e) => e.review);
-  // Other watches (no review) shown in a compact list
-  const watchOnlyEntries = entries.filter((e) => !e.review);
+  // ── Reviews and watch-only entries (dated entries only shown to others) ──
+  const reviewEntries = entries.filter((e) => e.review && e.watchedDate !== null);
+  const watchOnlyEntries = entries.filter((e) => !e.review && e.watchedDate !== null);
 
   return (
     <div className="min-h-screen">
@@ -204,47 +212,36 @@ export default async function VideoPage({
                 )}
               </div>
 
-              {/* Own entry summary or CTA */}
-              <div className="mt-auto pt-2 space-y-2">
-                {ownEntry ? (
-                  <div className="flex items-center gap-3 flex-wrap">
-                    <div className="flex items-center gap-2 bg-[var(--bg-card)] border border-white/[0.06] rounded-lg px-3 py-2 text-sm">
-                      <span className="text-[var(--accent-green)] text-xs font-bold uppercase tracking-wide">
-                        You watched
-                      </span>
-                      <span className="text-[var(--text-muted)] text-xs">
-                        {formatDate(ownEntry.watchedDate)}
-                      </span>
-                      {ownEntry.rating && (
-                        <StarDisplay rating={ownEntry.rating} className="" />
-                      )}
-                      {ownEntry.liked && (
-                        <span className="text-red-400 text-xs" role="img" aria-label="Liked">♥</span>
-                      )}
-                      {ownEntry.rewatch && (
-                        <span className="text-[var(--text-muted)] text-xs" role="img" aria-label="Rewatch">↺</span>
-                      )}
-                    </div>
-                    <Link
-                      href={`/log?v=${youtubeId}`}
-                      className="text-xs text-[var(--text-muted)] border border-[var(--border)] rounded-md px-3 py-2 hover:text-white hover:border-white/30 transition-colors"
-                    >
-                      Log again
-                    </Link>
-                  </div>
-                ) : (
-                  <div>
-                    <Link
-                      href={`/log?v=${youtubeId}`}
-                      className="inline-flex items-center gap-1.5 bg-[var(--accent-green)] hover:bg-[var(--accent-green-dark)] text-black font-bold px-4 py-2 rounded-md text-sm transition-colors"
-                    >
-                      + Log this video
-                    </Link>
+              {/* Quick actions + diary entry badge */}
+              <div className="mt-auto pt-2 space-y-3">
+                <VideoQuickActions
+                  youtubeId={youtubeId}
+                  undatedEntry={undatedEntry}
+                  hasDatedEntry={!!ownEntry}
+                  isLoggedIn={!!currentUserId}
+                />
+                {ownEntry && (
+                  <div className="flex items-center gap-2 bg-[var(--bg-card)] border border-white/[0.06] rounded-lg px-3 py-2 text-sm flex-wrap">
+                    <span className="text-[var(--accent-green)] text-xs font-bold uppercase tracking-wide">
+                      Your review
+                    </span>
+                    <span className="text-[var(--text-muted)] text-xs">
+                      {formatDate(ownEntry.watchedDate)}
+                    </span>
+                    {ownEntry.rating && (
+                      <StarDisplay rating={ownEntry.rating} className="" />
+                    )}
+                    {ownEntry.liked && (
+                      <span className="text-red-400 text-xs" role="img" aria-label="Liked">♥</span>
+                    )}
+                    {ownEntry.rewatch && (
+                      <span className="text-[var(--text-muted)] text-xs" role="img" aria-label="Rewatch">↺</span>
+                    )}
                   </div>
                 )}
                 <WatchlistButton
                   youtubeId={youtubeId}
-                  initialInWatchlist={inWatchlist}
+                  initialInWatchlist={inWatchlist as boolean}
                   isLoggedIn={!!currentUserId}
                 />
               </div>
@@ -302,9 +299,11 @@ export default async function VideoPage({
                         {entry.user.name ?? entry.user.username}
                       </Link>
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="text-xs text-[var(--text-muted)]">
-                          {formatDate(entry.watchedDate)}
-                        </span>
+                        {entry.watchedDate && (
+                          <span className="text-xs text-[var(--text-muted)]">
+                            {formatDate(entry.watchedDate)}
+                          </span>
+                        )}
                         {entry.rating && (
                           <StarDisplay rating={entry.rating} className="" />
                         )}
@@ -376,13 +375,8 @@ export default async function VideoPage({
 
         {watchCount === 0 && (
           <div className="text-center py-16 text-[var(--text-dim)]">
-            <p className="text-lg">No one has logged this video yet.</p>
-            <Link
-              href={`/log?v=${youtubeId}`}
-              className="mt-4 inline-flex items-center gap-1.5 bg-[var(--accent-green)] hover:bg-[var(--accent-green-dark)] text-black font-bold px-4 py-2 rounded-md text-sm transition-colors"
-            >
-              + Be the first
-            </Link>
+            <p className="text-lg">No one has watched this video yet.</p>
+            <p className="text-sm mt-1">Be the first to mark it as watched or write a review.</p>
           </div>
         )}
       </div>

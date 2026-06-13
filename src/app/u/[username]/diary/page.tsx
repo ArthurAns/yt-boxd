@@ -18,6 +18,7 @@ type EntryWithVideo = Awaited<
 function groupByMonth(entries: EntryWithVideo[]) {
   const map = new Map<string, EntryWithVideo[]>();
   for (const entry of entries) {
+    if (!entry.watchedDate) continue;
     const d = new Date(entry.watchedDate);
     const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
     if (!map.has(key)) map.set(key, []);
@@ -39,7 +40,7 @@ export default async function DiaryPage({
   if (!profileUser) notFound();
 
   const entries = (await prisma.diaryEntry.findMany({
-    where: { userId: profileUser.id },
+    where: { userId: profileUser.id, watchedDate: { not: null } },
     orderBy: [{ watchedDate: "desc" }, { createdAt: "desc" }],
     include: {
       video: {
@@ -97,7 +98,7 @@ export default async function DiaryPage({
                   {/* Entry rows */}
                   <div className="space-y-1">
                     {monthEntries.map((entry) => {
-                      const d = new Date(entry.watchedDate);
+                      const d = new Date(entry.watchedDate!);
                       return (
                         <div
                           key={entry.id}
