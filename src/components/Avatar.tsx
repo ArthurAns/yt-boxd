@@ -19,13 +19,18 @@ export default function Avatar({
   name,
   size = 32,
   className = "",
+  interactive = false,
 }: {
   src?: string | null;
   name?: string | null;
   size?: number;
   className?: string;
+  interactive?: boolean;
 }) {
   const [failed, setFailed] = useState(false);
+  const ringClass = interactive
+    ? "hover:ring-2 hover:ring-[var(--accent-green)] transition-all duration-150"
+    : "";
 
   if (src && !failed) {
     return (
@@ -35,7 +40,7 @@ export default function Avatar({
         width={size}
         height={size}
         onError={() => setFailed(true)}
-        className={`rounded-full flex-shrink-0 ${className}`}
+        className={`rounded-full flex-shrink-0 ${ringClass} ${className}`}
       />
     );
   }
@@ -49,7 +54,7 @@ export default function Avatar({
       role="img"
       aria-label={name ?? "avatar"}
       style={{ width: size, height: size, backgroundColor: bg, fontSize }}
-      className={`rounded-full flex items-center justify-center text-white font-semibold select-none flex-shrink-0 ${className}`}
+      className={`rounded-full flex items-center justify-center text-white font-semibold select-none flex-shrink-0 ${ringClass} ${className}`}
     >
       {initial ?? (
         <svg

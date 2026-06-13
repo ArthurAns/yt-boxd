@@ -292,7 +292,7 @@ export default async function VideoPage({
                 >
                   <div className="flex items-center gap-3">
                     <Link href={`/u/${entry.user.username ?? entry.user.name}`}>
-                      <Avatar src={entry.user.image} name={entry.user.name} size={32} className="hover:opacity-80 transition-opacity" />
+                      <Avatar src={entry.user.image} name={entry.user.name} size={32} interactive />
                     </Link>
                     <div className="flex-1 min-w-0">
                       <Link
@@ -355,7 +355,7 @@ export default async function VideoPage({
                   href={`/u/${entry.user.username ?? entry.user.name}`}
                   className="flex items-center gap-2 bg-[var(--bg-card)] border border-white/[0.06] rounded-full pl-1 pr-3 py-1 hover:bg-[var(--bg-secondary)] hover:border-white/[0.14] transition-colors text-sm"
                 >
-                  <Avatar src={entry.user.image} name={entry.user.name} size={24} />
+                  <Avatar src={entry.user.image} name={entry.user.name} size={24} interactive />
                   <span className="text-[var(--text-muted)] text-xs">
                     {entry.user.username ?? entry.user.name}
                   </span>

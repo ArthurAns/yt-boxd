@@ -61,6 +61,7 @@ export default async function MembersPage() {
                     src={member.image}
                     name={member.name ?? member.username}
                     size={44}
+                    interactive
                   />
                   <div className="min-w-0 flex-1">
                     <p className="font-medium text-sm truncate group-hover:text-[var(--accent-green)] transition-colors">

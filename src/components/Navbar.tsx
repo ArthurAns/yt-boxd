@@ -32,11 +32,17 @@ function NavLink({
       href={href}
       onClick={onClick}
       aria-current={active ? "page" : undefined}
-      className={`transition-colors ${
+      className={`relative pb-1 transition-colors ${
         active ? "text-[var(--accent-green)]" : "hover:text-white"
       } ${className}`}
     >
       {children}
+      <span
+        aria-hidden="true"
+        className={`absolute bottom-0 left-0 right-0 h-0.5 rounded-full bg-[var(--accent-green)] transition-all duration-200 ${
+          active ? "opacity-100" : "opacity-0"
+        }`}
+      />
     </Link>
   );
 }
@@ -123,9 +129,12 @@ export default function Navbar() {
             <>
               <Link
                 href="/log"
-                className="inline-flex items-center gap-1 bg-[var(--accent-green)] text-black text-xs font-bold px-3 py-1.5 rounded-md hover:bg-[var(--accent-green-dark)] transition-colors"
+                className="inline-flex items-center gap-1.5 bg-[var(--accent-green)] text-black text-sm font-bold px-4 py-2 rounded-md hover:bg-[var(--accent-green-dark)] transition-colors"
               >
-                + LOG
+                <svg className="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                </svg>
+                LOG
               </Link>
 
               <div className="relative" ref={menuRef}>
@@ -135,7 +144,7 @@ export default function Navbar() {
                   aria-expanded={menuOpen}
                   className="flex items-center gap-2 text-sm text-[var(--text-muted)] hover:text-white"
                 >
-                  <Avatar src={user.image} name={user.name} size={28} />
+                  <Avatar src={user.image} name={user.name} size={28} interactive />
                   <span className="hidden sm:block font-medium uppercase tracking-wider text-xs">
                     {user.name}
                   </span>

@@ -87,7 +87,7 @@ export default async function FollowList({
                 href={`/u/${member.username ?? member.name}`}
                 className="flex items-center gap-3 bg-[var(--bg-card)] border border-white/[0.06] rounded-lg p-4 hover:bg-[var(--bg-secondary)] hover:border-white/[0.14] transition-colors group"
               >
-                <Avatar src={member.image} name={member.name ?? member.username} size={44} />
+                <Avatar src={member.image} name={member.name ?? member.username} size={44} interactive />
                 <div className="min-w-0 flex-1">
                   <p className="font-medium text-sm truncate group-hover:text-[var(--accent-green)] transition-colors">
                     {member.name ?? member.username}

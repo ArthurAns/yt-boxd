@@ -100,7 +100,7 @@ export default async function FeedPage() {
                 {/* User row */}
                 <div className="flex items-center gap-2">
                   <Link href={`/u/${entry.user.username ?? entry.user.name}`}>
-                    <Avatar src={entry.user.image} name={entry.user.name} size={28} className="hover:opacity-80 transition-opacity" />
+                    <Avatar src={entry.user.image} name={entry.user.name} size={28} interactive />
                   </Link>
                   <div className="flex items-baseline gap-1.5 flex-wrap text-sm">
                     <Link

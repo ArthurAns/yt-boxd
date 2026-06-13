@@ -79,7 +79,7 @@ export default function CommentSection({
           {comments.map((comment) => (
             <div key={comment.id} className="flex gap-2 items-start group">
               <Link href={`/u/${comment.user.username ?? comment.user.name}`}>
-                <Avatar src={comment.user.image} name={comment.user.name} size={22} className="hover:opacity-80 transition-opacity" />
+                <Avatar src={comment.user.image} name={comment.user.name} size={22} interactive />
               </Link>
               <div className="flex-1 min-w-0">
                 <span className="text-xs font-medium text-[var(--text-muted)] mr-1.5">

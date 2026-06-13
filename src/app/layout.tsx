@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import { SessionProvider } from "@/components/SessionProvider";
 import { ToastProvider } from "@/components/Toast";
 import { auth } from "@/lib/auth";
@@ -34,9 +35,7 @@ export default async function RootLayout({
           <ToastProvider>
             <Navbar />
             <main className="flex-1">{children}</main>
-            <footer className="border-t border-[var(--border)] py-6 text-center text-[var(--text-dim)] text-xs">
-              YTBoxd · built for video lovers
-            </footer>
+            <Footer />
           </ToastProvider>
         </SessionProvider>
       </body>
