@@ -5,6 +5,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { SessionProvider } from "@/components/SessionProvider";
 import { ToastProvider } from "@/components/Toast";
+import { LogModalProvider } from "@/components/LogModal";
 import { auth } from "@/lib/auth";
 
 const inter = Inter({
@@ -33,9 +34,11 @@ export default async function RootLayout({
       <body className="min-h-screen flex flex-col">
         <SessionProvider session={session}>
           <ToastProvider>
-            <Navbar />
-            <main className="flex-1">{children}</main>
-            <Footer />
+            <LogModalProvider>
+              <Navbar />
+              <main className="flex-1">{children}</main>
+              <Footer />
+            </LogModalProvider>
           </ToastProvider>
         </SessionProvider>
       </body>

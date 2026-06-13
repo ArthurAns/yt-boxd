@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useSession, signIn, signOut } from "next-auth/react";
 import Avatar from "@/components/Avatar";
+import { useLogModal } from "@/components/LogModal";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
@@ -49,6 +50,7 @@ function NavLink({
 
 export default function Navbar() {
   const { data: session } = useSession();
+  const { open: openLogModal } = useLogModal();
   const [menuOpen, setMenuOpen] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -127,15 +129,15 @@ export default function Navbar() {
         <div className="flex items-center gap-3">
           {user ? (
             <>
-              <Link
-                href="/log"
+              <button
+                onClick={() => openLogModal()}
                 className="inline-flex items-center gap-1.5 bg-[var(--accent-green)] text-black text-sm font-bold px-4 py-2 rounded-md hover:bg-[var(--accent-green-dark)] transition-colors"
               >
                 <svg className="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                   <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                 </svg>
                 LOG
-              </Link>
+              </button>
 
               <div className="relative" ref={menuRef}>
                 <button
