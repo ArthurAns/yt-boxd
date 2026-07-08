@@ -1,7 +1,8 @@
 import Link from "next/link";
-import Image from "next/image";
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
+import VideoCard from "@/components/VideoCard";
+import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Videos" };
 
@@ -108,124 +109,99 @@ export default async function VideosPage({
 
   return (
     <div className="min-h-screen">
-      <div className="bg-[var(--bg-secondary)] border-b border-[var(--border)]">
-        <div className="mx-auto max-w-6xl px-4 py-6 flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-bold">Videos</h1>
-            <p className="text-sm text-[var(--text-muted)] mt-1">
-              Everything logged on YTBoxd
-            </p>
-          </div>
-          <div className="flex gap-2" role="group" aria-label="Sort videos">
-            {SORTS.map(({ key, label }) => (
-              <Link
-                key={key}
-                href={pageHref(key, 1)}
-                aria-current={sort === key ? "page" : undefined}
-                className={`text-xs font-semibold px-3 py-1.5 rounded-full border transition-colors ${
-                  sort === key
-                    ? "border-[var(--accent-green)] text-[var(--accent-green)] bg-[var(--accent-green)]/10"
-                    : "border-[var(--border)] text-[var(--text-muted)] hover:text-white hover:border-white/30"
-                }`}
-              >
-                {label}
-              </Link>
-            ))}
-          </div>
+      <div className="mx-auto flex max-w-6xl flex-wrap items-end justify-between gap-4 px-4 pt-10 pb-6">
+        <div className="space-y-1.5">
+          <h1 className="font-display text-3xl font-bold tracking-tight">Videos</h1>
+          <p className="text-sm text-muted">Everything logged on ytboxd</p>
+        </div>
+        <div
+          className="flex gap-1 rounded-xl border border-border bg-card p-1"
+          role="group"
+          aria-label="Sort videos"
+        >
+          {SORTS.map(({ key, label }) => (
+            <Link
+              key={key}
+              href={pageHref(key, 1)}
+              aria-current={sort === key ? "page" : undefined}
+              className={cn(
+                "rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors",
+                sort === key
+                  ? "bg-white/[0.09] text-foreground"
+                  : "text-muted hover:text-foreground"
+              )}
+            >
+              {label}
+            </Link>
+          ))}
         </div>
       </div>
 
-      <div className="mx-auto max-w-6xl px-4 py-8">
+      <div className="mx-auto max-w-6xl px-4 pb-10">
         {videos.length === 0 ? (
-          <div className="text-center py-20 text-[var(--text-dim)]">
+          <div className="py-20 text-center text-faint">
             <p>No videos here yet.</p>
             <Link
               href="/log"
-              className="mt-4 inline-block text-[var(--accent-green)] hover:underline text-sm"
+              className="mt-4 inline-block text-sm font-medium text-primary hover:underline"
             >
               Be the first to log one →
             </Link>
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            <div className="grid grid-cols-2 gap-x-4 gap-y-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
               {videos.map((video) => (
-                <Link
+                <VideoCard
                   key={video.youtubeId}
-                  href={`/video/${video.youtubeId}`}
-                  className="group space-y-2"
-                >
-                  <div className="relative aspect-video bg-[var(--bg-card)] rounded-md overflow-hidden">
-                    {video.thumbnailUrl ? (
-                      <Image
-                        src={video.thumbnailUrl}
-                        alt={video.title}
-                        fill
-                        className="object-cover transition-transform duration-300 group-hover:scale-105"
-                        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
-                      />
-                    ) : (
-                      <div className="absolute inset-0 flex items-center justify-center text-[var(--text-dim)] text-xs">
-                        No thumbnail
-                      </div>
-                    )}
-                    {video.duration && (
-                      <span className="absolute bottom-1 right-1 bg-black/80 text-white text-xs px-1 rounded-md">
-                        {video.duration}
-                      </span>
-                    )}
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium line-clamp-2 group-hover:text-[var(--accent-green)] transition-colors leading-snug">
-                      {video.title}
-                    </p>
-                    {video.channelName && (
-                      <p className="text-xs text-[var(--text-dim)] mt-0.5 truncate">
-                        {video.channelName}
-                      </p>
-                    )}
-                    <p className="text-xs text-[var(--text-muted)] mt-0.5">
+                  youtubeId={video.youtubeId}
+                  title={video.title}
+                  thumbnailUrl={video.thumbnailUrl}
+                  channelName={video.channelName}
+                  duration={video.duration}
+                  footer={
+                    <p className="mt-0.5 text-xs text-muted">
                       {video.avgRating !== null && (
-                        <span className="text-[var(--star-color)]">
+                        <span className="text-star">
                           {video.avgRating.toFixed(1)}★ ·{" "}
                         </span>
                       )}
                       {video.watches} {video.watches === 1 ? "watch" : "watches"}
                     </p>
-                  </div>
-                </Link>
+                  }
+                />
               ))}
             </div>
 
             {totalPages > 1 && (
               <nav
-                className="flex items-center justify-center gap-4 mt-10 text-sm"
+                className="mt-10 flex items-center justify-center gap-4 text-sm"
                 aria-label="Pagination"
               >
                 {page > 1 ? (
                   <Link
                     href={pageHref(sort, page - 1)}
-                    className="text-[var(--text-muted)] hover:text-white border border-[var(--border)] hover:border-white/30 rounded-md px-3 py-1.5 transition-colors"
+                    className="rounded-lg border border-border-strong px-3 py-1.5 text-muted transition-colors hover:border-white/30 hover:text-foreground"
                   >
                     ← Previous
                   </Link>
                 ) : (
-                  <span className="text-[var(--text-dim)]/50 border border-[var(--border)]/50 rounded-md px-3 py-1.5 select-none">
+                  <span className="select-none rounded-lg border border-border px-3 py-1.5 text-faint/60">
                     ← Previous
                   </span>
                 )}
-                <span className="text-xs text-[var(--text-muted)]">
+                <span className="text-xs text-muted">
                   Page {page} of {totalPages}
                 </span>
                 {page < totalPages ? (
                   <Link
                     href={pageHref(sort, page + 1)}
-                    className="text-[var(--text-muted)] hover:text-white border border-[var(--border)] hover:border-white/30 rounded-md px-3 py-1.5 transition-colors"
+                    className="rounded-lg border border-border-strong px-3 py-1.5 text-muted transition-colors hover:border-white/30 hover:text-foreground"
                   >
                     Next →
                   </Link>
                 ) : (
-                  <span className="text-[var(--text-dim)]/50 border border-[var(--border)]/50 rounded-md px-3 py-1.5 select-none">
+                  <span className="select-none rounded-lg border border-border px-3 py-1.5 text-faint/60">
                     Next →
                   </span>
                 )}

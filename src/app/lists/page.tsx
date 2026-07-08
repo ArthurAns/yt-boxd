@@ -4,6 +4,9 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import Avatar from "@/components/Avatar";
 import Image from "next/image";
+import PageHeader from "@/components/PageHeader";
+import { buttonVariants } from "@/components/ui/button";
+import { Plus } from "lucide-react";
 
 export const metadata: Metadata = { title: "Lists" };
 
@@ -30,52 +33,47 @@ export default async function ListsPage() {
 
   return (
     <div className="min-h-screen">
-      <div className="bg-[var(--bg-secondary)] border-b border-[var(--border)]">
-        <div className="mx-auto max-w-5xl px-4 py-6 flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold">Lists</h1>
-            <p className="text-sm text-[var(--text-muted)] mt-1">
-              Curated video collections from the community
-            </p>
-          </div>
-          {isLoggedIn && (
-            <Link
-              href="/lists/new"
-              className="bg-[var(--accent-green)] hover:bg-[var(--accent-green-dark)] text-black text-sm font-bold px-4 py-2 rounded-md transition-colors"
-            >
-              + New list
+      <PageHeader
+        title="Lists"
+        subtitle="Curated video collections from the community"
+        maxWidth="max-w-5xl"
+        action={
+          isLoggedIn && (
+            <Link href="/lists/new" className={buttonVariants({ size: "sm" })}>
+              <Plus className="size-4" />
+              New list
             </Link>
-          )}
-        </div>
-      </div>
+          )
+        }
+      />
 
-      <div className="mx-auto max-w-5xl px-4 py-8">
+      <div className="mx-auto max-w-5xl px-4 pb-10">
         {lists.length === 0 ? (
-          <div className="text-center py-20 space-y-3">
-            <p className="text-[var(--text-dim)]">No lists yet.</p>
+          <div className="space-y-3 py-20 text-center">
+            <p className="text-faint">No lists yet.</p>
             {isLoggedIn ? (
               <Link
                 href="/lists/new"
-                className="inline-block text-[var(--accent-green)] hover:underline text-sm"
+                className="inline-block text-sm font-medium text-primary hover:underline"
               >
                 Create the first list →
               </Link>
             ) : (
               <Link
                 href="/login"
-                className="inline-block text-[var(--accent-green)] hover:underline text-sm"
+                className="inline-block text-sm font-medium text-primary hover:underline"
               >
                 Sign in to create a list →
               </Link>
             )}
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             {lists.map((list) => (
               <Link
                 key={list.id}
                 href={`/lists/${list.id}`}
-                className="bg-[var(--bg-card)] border border-white/[0.06] rounded-lg p-4 hover:bg-[var(--bg-secondary)] hover:border-white/[0.14] transition-colors group space-y-3"
+                className="group space-y-3 rounded-2xl border border-border bg-card p-4 transition-colors hover:border-border-strong hover:bg-card-hover"
               >
                 {/* Overlapping thumbnail stack */}
                 {list.items.length > 0 ? (
@@ -83,7 +81,7 @@ export default async function ListsPage() {
                     {list.items.map(({ video }, i) => (
                       <div
                         key={i}
-                        className="absolute top-0 h-full aspect-video rounded-md overflow-hidden ring-1 ring-black/60 shadow-lg bg-[var(--bg-secondary)]"
+                        className="absolute top-0 aspect-video h-full overflow-hidden rounded-lg bg-popover shadow-lg ring-1 ring-black/60"
                         style={{ left: `${i * 12.5}%`, zIndex: list.items.length - i }}
                       >
                         {video.thumbnailUrl ? (
@@ -95,7 +93,7 @@ export default async function ListsPage() {
                             sizes="200px"
                           />
                         ) : (
-                          <div className="absolute inset-0 flex items-center justify-center text-[var(--text-dim)] text-xs">
+                          <div className="absolute inset-0 flex items-center justify-center text-xs text-faint">
                             No thumb
                           </div>
                         )}
@@ -103,17 +101,17 @@ export default async function ListsPage() {
                     ))}
                   </div>
                 ) : (
-                  <div className="h-28 rounded-md bg-[var(--bg-secondary)]/60 border border-dashed border-white/10 flex items-center justify-center text-xs text-[var(--text-dim)]">
+                  <div className="flex h-28 items-center justify-center rounded-lg border border-dashed border-white/10 bg-inset/60 text-xs text-faint">
                     Empty list
                   </div>
                 )}
 
                 <div>
-                  <h2 className="font-semibold text-sm group-hover:text-[var(--accent-green)] transition-colors line-clamp-1">
+                  <h2 className="line-clamp-1 text-sm font-semibold transition-colors group-hover:text-primary">
                     {list.name}
                   </h2>
                   {list.description && (
-                    <p className="text-xs text-[var(--text-dim)] mt-0.5 line-clamp-2">
+                    <p className="mt-0.5 line-clamp-2 text-xs text-faint">
                       {list.description}
                     </p>
                   )}
@@ -121,10 +119,10 @@ export default async function ListsPage() {
 
                 <div className="flex items-center gap-2">
                   <Avatar src={list.user.image} name={list.user.name} size={18} />
-                  <span className="text-xs text-[var(--text-muted)]">
+                  <span className="text-xs text-muted">
                     {list.user.username ?? list.user.name}
                   </span>
-                  <span className="text-xs text-[var(--text-dim)] ml-auto">
+                  <span className="ml-auto text-xs text-faint">
                     {list._count.items} {list._count.items === 1 ? "video" : "videos"}
                   </span>
                 </div>

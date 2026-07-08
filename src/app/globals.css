@@ -1,49 +1,74 @@
 @import "tailwindcss";
 
-/* ─── Letterboxd-inspired colour tokens ───────────────────────────────────── */
-:root {
-  --bg-primary:        #14181c;
-  --bg-secondary:      #2c3440;
-  --bg-card:           #1f2937;
-  --border:            rgba(255, 255, 255, 0.1);
-  --text-primary:      #fff;
-  --text-muted:        #9ab;
-  --text-dim:          #678;
-  --accent-green:      #00e054;
-  --accent-green-dark: #00b020;
-  --star-color:        #00b020;
-  --star-empty:        #445566;
-  --like-color:        #ef4444;
-  --orange-heart:      #f97316;
+/* ─── Design tokens ───────────────────────────────────────────────────────────
+   Dark-only palette: warm near-black inks, coral accent, amber stars.
+   Exposed through Tailwind 4 @theme so tokens become utilities
+   (bg-background, text-muted, border-border, bg-primary, …).            */
+@theme {
+  /* Surfaces */
+  --color-background: #0e1014;
+  --color-inset: #0a0b0e;
+  --color-card: #15181e;
+  --color-card-hover: #1b1f26;
+  --color-popover: #1c2028;
+
+  /* Lines */
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-border-strong: rgba(255, 255, 255, 0.16);
+
+  /* Text */
+  --color-foreground: #f2f4f8;
+  --color-muted: #9aa3b0;
+  --color-faint: #5f6874;
+
+  /* Brand accent — warm coral */
+  --color-primary: #ff5a3c;
+  --color-primary-hover: #ff7357;
+  --color-primary-soft: rgba(255, 90, 60, 0.13);
+  --color-primary-foreground: #1f0a05;
+
+  /* Functional colours */
+  --color-star: #ffb43a;
+  --color-star-soft: rgba(255, 180, 58, 0.15);
+  --color-watched: #38c882;
+  --color-watched-soft: rgba(56, 200, 130, 0.14);
+
+  /* Type */
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-space-grotesk), var(--font-inter), ui-sans-serif,
+    system-ui, sans-serif;
 }
 
 /* ─── Base ────────────────────────────────────────────────────────────────── */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
 html {
   color-scheme: dark;
 }
 
 body {
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
-  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
-h1, h2, h3 {
-  letter-spacing: -0.02em;
+h1,
+h2,
+h3 {
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+
+::selection {
+  background: var(--color-primary);
+  color: var(--color-primary-foreground);
 }
 
 :focus-visible {
-  outline: 2px solid var(--accent-green);
+  outline: 2px solid var(--color-primary);
   outline-offset: 2px;
-  border-radius: 2px;
+  border-radius: 4px;
 }
 
 a {
@@ -51,44 +76,84 @@ a {
   text-decoration: none;
 }
 
-a:hover {
-  color: var(--accent-green);
+/* ─── Scrollbar ───────────────────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.14);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.24);
 }
 
-/* ─── Scrollbar ───────────────────────────────────────────────────────────── */
-::-webkit-scrollbar        { width: 6px; height: 6px; }
-::-webkit-scrollbar-track  { background: var(--bg-primary); }
-::-webkit-scrollbar-thumb  { background: #445566; border-radius: 3px; }
-
-/* ─── Utility classes ─────────────────────────────────────────────────────── */
-.text-muted     { color: var(--text-muted); }
-.text-dim       { color: var(--text-dim); }
-.text-accent    { color: var(--accent-green); }
-.bg-card        { background-color: var(--bg-card); }
-.bg-secondary   { background-color: var(--bg-secondary); }
-.border-default { border-color: var(--border); }
-
 /* ─── Star rating ─────────────────────────────────────────────────────────── */
-.star-filled { color: var(--star-color); }
-.star-empty  { color: var(--star-empty); }
+.star-filled {
+  color: var(--color-star);
+}
+.star-empty {
+  color: rgba(255, 255, 255, 0.16);
+}
 
 /* ─── Thumbnail aspect ratio ──────────────────────────────────────────────── */
 .thumbnail {
   aspect-ratio: 16 / 9;
   object-fit: cover;
-  border-radius: 6px;
+  border-radius: 8px;
 }
 
-/* ─── Fade-in ─────────────────────────────────────────────────────────────── */
+/* ─── Motion ──────────────────────────────────────────────────────────────── */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(4px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
-.animate-fade-in { animation: fadeIn 0.15s ease-out; }
+.animate-fade-in {
+  animation: fadeIn 0.16s ease-out;
+}
 
-/* ─── Slide-up (toasts) ───────────────────────────────────────────────────── */
 @keyframes slideUp {
-  from { opacity: 0; transform: translateY(14px) scale(0.97); }
-  to   { opacity: 1; transform: translateY(0)    scale(1); }
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
-.animate-slide-up { animation: slideUp 0.22s cubic-bezier(0.16, 1, 0.3, 1); }
+.animate-slide-up {
+  animation: slideUp 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes zoomIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+.animate-zoom-in {
+  animation: zoomIn 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-in,
+  .animate-slide-up,
+  .animate-zoom-in {
+    animation: none;
+  }
+}

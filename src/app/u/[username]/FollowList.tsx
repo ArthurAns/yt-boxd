@@ -42,30 +42,28 @@ export default async function FollowList({
 
   return (
     <div className="min-h-screen">
-      <div className="bg-[var(--bg-secondary)] border-b border-[var(--border)]">
-        <div className="mx-auto max-w-3xl px-4 py-6 flex items-center justify-between">
-          <div>
-            <Link
-              href={`/u/${username}`}
-              className="text-[var(--accent-green)] text-sm hover:underline"
-            >
-              ← {profileUser.name ?? username}
-            </Link>
-            <h1 className="text-xl font-bold mt-1">{title}</h1>
-          </div>
-          <span className="text-sm text-[var(--text-muted)]">
-            {users.length} {users.length === 1 ? "member" : "members"}
-          </span>
+      <div className="mx-auto flex max-w-3xl items-end justify-between px-4 pt-10 pb-6">
+        <div>
+          <Link
+            href={`/u/${username}`}
+            className="text-sm font-medium text-primary hover:underline"
+          >
+            ← {profileUser.name ?? username}
+          </Link>
+          <h1 className="mt-1 font-display text-3xl font-bold tracking-tight">{title}</h1>
         </div>
+        <span className="text-sm text-muted">
+          {users.length} {users.length === 1 ? "member" : "members"}
+        </span>
       </div>
 
-      <div className="mx-auto max-w-3xl px-4 py-8">
+      <div className="mx-auto max-w-3xl px-4 pb-10">
         {users.length === 0 ? (
-          <div className="text-center py-16 space-y-3">
+          <div className="space-y-3 py-16 text-center">
             <div className="text-4xl" aria-hidden="true">
               👋
             </div>
-            <p className="text-sm text-[var(--text-muted)]">
+            <p className="text-sm text-muted">
               {mode === "followers"
                 ? "No followers yet."
                 : `${profileUser.name ?? username} isn't following anyone yet.`}
@@ -73,30 +71,30 @@ export default async function FollowList({
             {mode === "following" && (
               <Link
                 href="/members"
-                className="inline-block text-sm text-[var(--accent-green)] hover:underline"
+                className="inline-block text-sm font-medium text-primary hover:underline"
               >
                 Browse members →
               </Link>
             )}
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             {users.map((member) => (
               <Link
                 key={member.id}
                 href={`/u/${member.username ?? member.name}`}
-                className="flex items-center gap-3 bg-[var(--bg-card)] border border-white/[0.06] rounded-lg p-4 hover:bg-[var(--bg-secondary)] hover:border-white/[0.14] transition-colors group"
+                className="group flex items-center gap-3 rounded-2xl border border-border bg-card p-4 transition-colors hover:border-border-strong hover:bg-card-hover"
               >
                 <Avatar src={member.image} name={member.name ?? member.username} size={44} interactive />
                 <div className="min-w-0 flex-1">
-                  <p className="font-medium text-sm truncate group-hover:text-[var(--accent-green)] transition-colors">
+                  <p className="truncate text-sm font-semibold transition-colors group-hover:text-primary">
                     {member.name ?? member.username}
                   </p>
-                  <p className="text-xs text-[var(--text-muted)] truncate">
+                  <p className="truncate text-xs text-muted">
                     @{member.username}
                   </p>
                   {member.bio && (
-                    <p className="text-xs text-[var(--text-dim)] mt-0.5 line-clamp-1">
+                    <p className="mt-0.5 line-clamp-1 text-xs text-faint">
                       {member.bio}
                     </p>
                   )}

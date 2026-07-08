@@ -3,6 +3,8 @@ import Image from "next/image";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import StarDisplay from "@/components/StarDisplay";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export default async function HomePage() {
   const session = await auth();
@@ -38,12 +40,12 @@ export default async function HomePage() {
   return (
     <div>
       {/* Hero with thumbnail-collage backdrop */}
-      <div className="relative overflow-hidden">
+      <div className="relative overflow-hidden border-b border-border bg-inset">
         {heroVideos.length > 0 && (
           <div className="absolute inset-0" aria-hidden="true">
-            <div className="absolute inset-0 grid grid-cols-3 md:grid-cols-6 auto-rows-fr gap-1 opacity-25">
+            <div className="absolute inset-0 grid grid-cols-3 auto-rows-fr gap-1.5 opacity-30 md:grid-cols-6 [transform:perspective(1200px)_rotateX(8deg)_scale(1.1)]">
               {heroVideos.map((video) => (
-                <div key={video.youtubeId} className="relative">
+                <div key={video.youtubeId} className="relative overflow-hidden rounded-md">
                   <Image
                     src={video.thumbnailUrl!}
                     alt=""
@@ -54,53 +56,52 @@ export default async function HomePage() {
                 </div>
               ))}
             </div>
-            <div className="absolute inset-0 bg-gradient-to-b from-[var(--bg-primary)]/70 via-[var(--bg-primary)]/40 to-[var(--bg-primary)]" />
+            <div className="absolute inset-0 bg-gradient-to-b from-inset/80 via-inset/55 to-inset" />
           </div>
         )}
-        <div className="relative flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
-          <h1 className="text-3xl sm:text-5xl font-bold mb-4 leading-tight">
-            Track videos you&apos;ve watched.
-            <br />
-            <span className="text-[var(--accent-green)]">Save those you want to.</span>
-            <br />
-            Tell your friends what&apos;s good.
+        <div className="relative mx-auto flex min-h-[62vh] max-w-3xl flex-col items-center justify-center px-4 py-20 text-center">
+          <h1 className="mb-5 font-display text-4xl font-bold leading-[1.1] tracking-tight sm:text-6xl">
+            Every video you watch,{" "}
+            <span className="text-primary">worth remembering.</span>
           </h1>
-          <p className="text-[var(--text-muted)] text-base sm:text-lg max-w-xl mb-8">
-            YTBoxd is a social platform for YouTube. Keep a diary, rate videos,
-            write reviews, and see what your friends are watching.
+          <p className="mb-9 max-w-xl text-base text-muted sm:text-lg">
+            Keep a diary of the YouTube videos you watch. Rate them, review
+            them, and see what your friends think is worth your time.
           </p>
-          {loggedIn ? (
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            {loggedIn ? (
+              <Link href="/log" className={buttonVariants({ size: "lg" })}>
+                Log a video
+              </Link>
+            ) : (
+              <Link href="/login" className={buttonVariants({ size: "lg" })}>
+                Get started — it&apos;s free
+              </Link>
+            )}
             <Link
-              href="/log"
-              className="bg-[var(--accent-green)] text-black font-bold px-6 py-3 rounded-md text-lg hover:bg-[var(--accent-green-dark)] transition-colors"
+              href="/videos"
+              className={cn(buttonVariants({ variant: "secondary", size: "lg" }))}
             >
-              + Log a video
+              Browse videos
             </Link>
-          ) : (
-            <Link
-              href="/login"
-              className="bg-[var(--accent-green)] text-black font-bold px-6 py-3 rounded-md text-lg hover:bg-[var(--accent-green-dark)] transition-colors"
-            >
-              Get started — it&apos;s free
-            </Link>
-          )}
+          </div>
         </div>
       </div>
 
       {!loggedIn && (
-        <div className="mx-auto max-w-5xl px-4 pb-16 space-y-12">
+        <div className="mx-auto max-w-6xl space-y-14 px-4 py-14">
           {/* Stats counters */}
-          <div className="flex justify-center gap-12 flex-wrap border-y border-[var(--border)] py-6">
+          <div className="flex flex-wrap justify-center gap-x-16 gap-y-6">
             {[
               { label: "Members", value: memberCount },
               { label: "Videos", value: videoCount },
               { label: "Watches logged", value: entryCount },
             ].map(({ label, value }) => (
               <div key={label} className="text-center">
-                <div className="text-white font-bold text-2xl leading-none">
+                <div className="font-display text-3xl font-bold leading-none text-foreground">
                   {value.toLocaleString("en-GB")}
                 </div>
-                <div className="text-[var(--text-muted)] text-xs mt-1 uppercase tracking-wide">
+                <div className="mt-2 text-xs font-medium uppercase tracking-widest text-faint">
                   {label}
                 </div>
               </div>
@@ -110,35 +111,35 @@ export default async function HomePage() {
           {/* Recent public activity */}
           {recentEntries.length > 0 && (
             <section>
-              <h2 className="text-xs font-bold uppercase tracking-widest text-[var(--text-muted)] mb-4 text-center">
-                Recently logged on YTBoxd
+              <h2 className="mb-5 text-center text-xs font-bold uppercase tracking-widest text-faint">
+                Recently logged on ytboxd
               </h2>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+              <div className="grid grid-cols-2 gap-x-4 gap-y-6 sm:grid-cols-3 md:grid-cols-6">
                 {recentEntries.map((entry) => (
                   <Link
                     key={entry.id}
                     href={`/video/${entry.video.youtubeId}`}
-                    className="group space-y-1.5"
+                    className="group space-y-2"
                   >
                     {entry.video.thumbnailUrl ? (
-                      <div className="overflow-hidden rounded-md">
+                      <div className="overflow-hidden rounded-xl ring-1 ring-white/5 transition-shadow group-hover:ring-2 group-hover:ring-primary/70">
                         <Image
                           src={entry.video.thumbnailUrl}
                           alt={entry.video.title}
                           width={200}
                           height={113}
-                          className="w-full object-cover aspect-video transition-transform duration-300 group-hover:scale-105"
+                          className="aspect-video w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
                         />
                       </div>
                     ) : (
-                      <div className="w-full aspect-video bg-[var(--bg-card)] rounded-md flex items-center justify-center text-[var(--text-dim)] text-xs">
+                      <div className="flex aspect-video w-full items-center justify-center rounded-xl bg-card text-xs text-faint">
                         No thumb
                       </div>
                     )}
-                    <p className="text-xs text-[var(--text-muted)] line-clamp-2 group-hover:text-white transition-colors">
+                    <p className="line-clamp-2 text-xs font-medium text-muted transition-colors group-hover:text-foreground">
                       {entry.video.title}
                     </p>
-                    <div className="flex items-center gap-1.5 text-[10px] text-[var(--text-dim)]">
+                    <div className="flex items-center gap-1.5 text-[10px] text-faint">
                       <span className="truncate">
                         {entry.user.name ?? entry.user.username}
                       </span>

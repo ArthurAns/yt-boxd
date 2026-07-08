@@ -41,26 +41,24 @@ export default async function WatchlistPage({
 
   return (
     <div className="min-h-screen">
-      <div className="bg-[var(--bg-secondary)] border-b border-[var(--border)]">
-        <div className="mx-auto max-w-4xl px-4 py-6 flex items-center justify-between">
-          <div>
-            <Link
-              href={`/u/${username}`}
-              className="text-[var(--accent-green)] text-sm hover:underline"
-            >
-              ← {profileUser.name ?? username}
-            </Link>
-            <h1 className="text-xl font-bold mt-1">Watchlist</h1>
-          </div>
-          <span className="text-sm text-[var(--text-muted)]">
-            {items.length} {items.length === 1 ? "video" : "videos"}
-          </span>
+      <div className="mx-auto flex max-w-4xl items-end justify-between px-4 pt-10 pb-6">
+        <div>
+          <Link
+            href={`/u/${username}`}
+            className="text-sm font-medium text-primary hover:underline"
+          >
+            ← {profileUser.name ?? username}
+          </Link>
+          <h1 className="mt-1 font-display text-3xl font-bold tracking-tight">Watchlist</h1>
         </div>
+        <span className="text-sm text-muted">
+          {items.length} {items.length === 1 ? "video" : "videos"}
+        </span>
       </div>
 
-      <div className="mx-auto max-w-4xl px-4 py-8">
+      <div className="mx-auto max-w-4xl px-4 pb-10">
         {items.length === 0 ? (
-          <p className="text-center text-[var(--text-dim)] py-16 text-sm">
+          <p className="py-16 text-center text-sm text-faint">
             Nothing saved to watchlist yet.
           </p>
         ) : (
@@ -68,10 +66,10 @@ export default async function WatchlistPage({
             {items.map(({ video, addedAt }) => (
               <div
                 key={video.youtubeId}
-                className="flex items-center gap-3 bg-[var(--bg-card)] border border-white/[0.06] rounded-lg p-3"
+                className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3 transition-colors hover:border-border-strong"
               >
                 {video.thumbnailUrl ? (
-                  <Link href={`/video/${video.youtubeId}`} className="flex-shrink-0 block overflow-hidden rounded-md">
+                  <Link href={`/video/${video.youtubeId}`} className="block flex-shrink-0 overflow-hidden rounded-lg">
                     <Image
                       src={video.thumbnailUrl}
                       alt={video.title}
@@ -81,25 +79,25 @@ export default async function WatchlistPage({
                     />
                   </Link>
                 ) : null}
-                <div className="flex-1 min-w-0">
+                <div className="min-w-0 flex-1">
                   <Link
                     href={`/video/${video.youtubeId}`}
-                    className="font-medium text-sm hover:text-[var(--accent-green)] transition-colors line-clamp-1"
+                    className="line-clamp-1 text-sm font-medium transition-colors hover:text-primary"
                   >
                     {video.title}
                   </Link>
-                  <div className="flex items-center gap-3 mt-0.5">
+                  <div className="mt-0.5 flex items-center gap-3">
                     {video.channelName && (
-                      <span className="text-xs text-[var(--text-dim)] truncate">
+                      <span className="truncate text-xs text-faint">
                         {video.channelName}
                       </span>
                     )}
                     {video.duration && (
-                      <span className="text-xs text-[var(--text-dim)]">{video.duration}</span>
+                      <span className="text-xs text-faint">{video.duration}</span>
                     )}
                   </div>
                 </div>
-                <span className="text-xs text-[var(--text-dim)] flex-shrink-0">
+                <span className="flex-shrink-0 text-xs text-faint">
                   {new Date(addedAt).toLocaleDateString("en-GB", {
                     day: "numeric",
                     month: "short",

@@ -11,9 +11,9 @@ export default async function NewListPage() {
     redirect("/login?callbackUrl=/lists/new");
   }
   return (
-    <div className="min-h-screen py-10 px-4">
+    <div className="min-h-screen px-4 py-10">
       <div className="mx-auto max-w-xl space-y-6">
-        <h1 className="text-2xl font-bold">Create a list</h1>
+        <h1 className="font-display text-3xl font-bold tracking-tight">Create a list</h1>
         <NewListForm />
       </div>
     </div>

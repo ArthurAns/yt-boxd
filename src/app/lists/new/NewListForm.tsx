@@ -2,6 +2,10 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 
 export default function NewListForm() {
   const router = useRouter();
@@ -33,12 +37,15 @@ export default function NewListForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="bg-[var(--bg-card)] border border-white/[0.06] rounded-lg p-6 space-y-5">
-      <div className="space-y-1.5">
-        <label className="text-sm text-[var(--text-muted)]" htmlFor="list-name">
-          List name <span className="text-red-400">*</span>
-        </label>
-        <input
+    <form
+      onSubmit={handleSubmit}
+      className="space-y-5 rounded-2xl border border-border bg-card p-6"
+    >
+      <div className="space-y-2">
+        <Label htmlFor="list-name">
+          List name <span className="text-primary">*</span>
+        </Label>
+        <Input
           id="list-name"
           type="text"
           value={name}
@@ -46,57 +53,48 @@ export default function NewListForm() {
           required
           maxLength={100}
           placeholder="e.g. Best tech explainers"
-          className="w-full bg-[var(--bg-secondary)] border border-white/10 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent-green)] placeholder:text-[var(--text-dim)]"
         />
       </div>
 
-      <div className="space-y-1.5">
-        <label className="text-sm text-[var(--text-muted)]" htmlFor="list-desc">
-          Description <span className="text-[var(--text-dim)]">(optional)</span>
-        </label>
-        <textarea
+      <div className="space-y-2">
+        <Label htmlFor="list-desc">
+          Description <span className="font-normal normal-case text-faint">(optional)</span>
+        </Label>
+        <Textarea
           id="list-desc"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           rows={3}
           maxLength={500}
           placeholder="What's this list about?"
-          className="w-full bg-[var(--bg-secondary)] border border-white/10 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent-green)] resize-none placeholder:text-[var(--text-dim)]"
+          className="resize-none"
         />
       </div>
 
-      <label className="flex items-center gap-3 cursor-pointer select-none">
+      <label className="flex cursor-pointer select-none items-center gap-3">
         <input
           type="checkbox"
           checked={isPublic}
           onChange={(e) => setIsPublic(e.target.checked)}
-          className="w-4 h-4 accent-[var(--accent-green)]"
+          className="size-4 accent-[var(--color-primary)]"
         />
         <div>
           <span className="text-sm font-medium">Public list</span>
-          <p className="text-xs text-[var(--text-dim)]">
+          <p className="text-xs text-faint">
             Public lists appear in the community lists page
           </p>
         </div>
       </label>
 
-      {error && <p className="text-sm text-red-400">{error}</p>}
+      {error && <p className="text-sm text-primary">{error}</p>}
 
       <div className="flex gap-3">
-        <button
-          type="submit"
-          disabled={saving || !name.trim()}
-          className="px-5 py-2 rounded-lg bg-[var(--accent-green)] hover:bg-[var(--accent-green-dark)] text-black text-sm font-semibold transition-colors disabled:opacity-50"
-        >
+        <Button type="submit" disabled={saving || !name.trim()}>
           {saving ? "Creating…" : "Create list"}
-        </button>
-        <button
-          type="button"
-          onClick={() => router.back()}
-          className="px-5 py-2 rounded-lg border border-[var(--border)] text-[var(--text-muted)] hover:text-white text-sm transition-colors"
-        >
+        </Button>
+        <Button type="button" variant="outline" onClick={() => router.back()}>
           Cancel
-        </button>
+        </Button>
       </div>
     </form>
   );

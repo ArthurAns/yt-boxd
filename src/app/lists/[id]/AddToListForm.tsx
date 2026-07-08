@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { parseYouTubeId } from "@/lib/youtube";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 export default function AddToListForm({ listId }: { listId: string }) {
   const [url, setUrl] = useState("");
@@ -41,35 +43,29 @@ export default function AddToListForm({ listId }: { listId: string }) {
   }
 
   return (
-    <section className="bg-[var(--bg-card)] border border-white/[0.06] rounded-lg p-5 space-y-4">
-      <h2 className="text-sm font-bold uppercase tracking-widest text-[var(--text-muted)]">
+    <section className="space-y-4 rounded-2xl border border-border bg-card p-5">
+      <h2 className="text-xs font-bold uppercase tracking-widest text-faint">
         Add a video
       </h2>
       <form onSubmit={handleSubmit} className="space-y-3">
-        <input
+        <Input
           type="text"
           value={url}
           onChange={(e) => setUrl(e.target.value)}
           required
           placeholder="YouTube URL or video ID"
-          className="w-full bg-[var(--bg-secondary)] border border-white/10 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent-green)] placeholder:text-[var(--text-dim)]"
         />
-        <input
+        <Input
           type="text"
           value={note}
           onChange={(e) => setNote(e.target.value)}
           maxLength={200}
           placeholder="Note (optional)"
-          className="w-full bg-[var(--bg-secondary)] border border-white/10 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent-green)] placeholder:text-[var(--text-dim)]"
         />
-        {error && <p className="text-sm text-red-400">{error}</p>}
-        <button
-          type="submit"
-          disabled={saving || !url.trim()}
-          className="px-4 py-2 rounded-lg bg-[var(--accent-green)] hover:bg-[var(--accent-green-dark)] text-black text-sm font-semibold transition-colors disabled:opacity-50"
-        >
+        {error && <p className="text-sm text-primary">{error}</p>}
+        <Button type="submit" disabled={saving || !url.trim()}>
           {saving ? "Adding…" : "Add video"}
-        </button>
+        </Button>
       </form>
     </section>
   );

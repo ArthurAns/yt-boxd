@@ -59,26 +59,24 @@ export default async function DiaryPage({
   return (
     <div className="min-h-screen">
       {/* Header */}
-      <div className="bg-[var(--bg-secondary)] border-b border-[var(--border)]">
-        <div className="mx-auto max-w-4xl px-4 py-6 flex items-center justify-between">
-          <div>
-            <Link
-              href={`/u/${username}`}
-              className="text-[var(--accent-green)] text-sm hover:underline"
-            >
-              ← {profileUser.name ?? username}
-            </Link>
-            <h1 className="text-xl font-bold mt-1">Diary</h1>
-          </div>
-          <span className="text-sm text-[var(--text-muted)]">
-            {entries.length} {entries.length === 1 ? "entry" : "entries"}
-          </span>
+      <div className="mx-auto flex max-w-4xl items-end justify-between px-4 pt-10 pb-6">
+        <div>
+          <Link
+            href={`/u/${username}`}
+            className="text-sm font-medium text-primary hover:underline"
+          >
+            ← {profileUser.name ?? username}
+          </Link>
+          <h1 className="mt-1 font-display text-3xl font-bold tracking-tight">Diary</h1>
         </div>
+        <span className="text-sm text-muted">
+          {entries.length} {entries.length === 1 ? "entry" : "entries"}
+        </span>
       </div>
 
-      <div className="mx-auto max-w-4xl px-4 py-8">
+      <div className="mx-auto max-w-4xl px-4 pb-10">
         {entries.length === 0 ? (
-          <p className="text-[var(--text-dim)] text-sm text-center py-16">
+          <p className="py-16 text-center text-sm text-faint">
             No diary entries yet.
           </p>
         ) : (
@@ -88,11 +86,11 @@ export default async function DiaryPage({
               return (
                 <section key={key}>
                   {/* Month/year heading */}
-                  <div className="flex items-baseline gap-3 mb-4 border-b border-[var(--border)] pb-2">
-                    <span className="text-lg font-bold text-white">
+                  <div className="mb-4 flex items-baseline gap-3 border-b border-border pb-2">
+                    <span className="font-display text-lg font-bold">
                       {MONTHS[parseInt(month) - 1]}
                     </span>
-                    <span className="text-sm text-[var(--text-muted)]">{year}</span>
+                    <span className="text-sm text-muted">{year}</span>
                   </div>
 
                   {/* Entry rows */}
@@ -102,19 +100,19 @@ export default async function DiaryPage({
                       return (
                         <div
                           key={entry.id}
-                          className="grid grid-cols-[2rem_1fr_auto] gap-3 items-center py-2 border-b border-[var(--border)]/40 group"
+                          className="group grid grid-cols-[2rem_1fr_auto] items-center gap-3 border-b border-border/60 py-2"
                         >
                           {/* Day number */}
-                          <span className="text-[var(--text-muted)] text-sm tabular-nums text-right">
+                          <span className="text-right text-sm tabular-nums text-muted">
                             {d.getDate()}
                           </span>
 
                           {/* Thumbnail + title */}
-                          <div className="flex items-center gap-3 min-w-0">
+                          <div className="flex min-w-0 items-center gap-3">
                             {entry.video.thumbnailUrl ? (
                               <Link
                                 href={`/video/${entry.video.youtubeId}`}
-                                className="flex-shrink-0 block overflow-hidden rounded-md"
+                                className="block flex-shrink-0 overflow-hidden rounded-md"
                               >
                                 <Image
                                   src={entry.video.thumbnailUrl}
@@ -128,12 +126,12 @@ export default async function DiaryPage({
                             <div className="min-w-0">
                               <Link
                                 href={`/video/${entry.video.youtubeId}`}
-                                className="text-sm font-medium hover:text-[var(--accent-green)] transition-colors line-clamp-1"
+                                className="line-clamp-1 text-sm font-medium transition-colors hover:text-primary"
                               >
                                 {entry.video.title}
                               </Link>
                               {entry.video.channelName && (
-                                <p className="text-xs text-[var(--text-dim)] truncate">
+                                <p className="truncate text-xs text-faint">
                                   {entry.video.channelName}
                                 </p>
                               )}
@@ -141,14 +139,14 @@ export default async function DiaryPage({
                           </div>
 
                           {/* Rating + badges */}
-                          <div className="flex items-center gap-2 flex-shrink-0">
+                          <div className="flex flex-shrink-0 items-center gap-2">
                             {entry.rewatch && (
-                              <span className="text-[var(--text-muted)] text-xs" title="Rewatch" role="img" aria-label="Rewatch">
+                              <span className="text-xs text-muted" title="Rewatch" role="img" aria-label="Rewatch">
                                 ↺
                               </span>
                             )}
                             {entry.liked && (
-                              <span className="text-red-400 text-xs" title="Liked" role="img" aria-label="Liked">
+                              <span className="text-xs text-primary" title="Liked" role="img" aria-label="Liked">
                                 ♥
                               </span>
                             )}

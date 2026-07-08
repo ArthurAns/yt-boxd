@@ -3,43 +3,27 @@
 import { signIn } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
+import { CalendarDays, Star, Users } from "lucide-react";
+import Logo from "@/components/Logo";
 
 const FEATURES = [
   {
     title: "Keep a diary",
     description:
       "Log every video you watch with the date, so you never lose track of a gem again.",
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5" aria-hidden="true">
-        <rect x="3" y="4" width="18" height="18" rx="2" />
-        <line x1="16" y1="2" x2="16" y2="6" />
-        <line x1="8" y1="2" x2="8" y2="6" />
-        <line x1="3" y1="10" x2="21" y2="10" />
-      </svg>
-    ),
+    icon: <CalendarDays className="size-5" aria-hidden="true" />,
   },
   {
     title: "Rate and review",
     description:
       "Half-star ratings and short reviews — tell the world which videos are actually worth it.",
-    icon: (
-      <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5" aria-hidden="true">
-        <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" />
-      </svg>
-    ),
+    icon: <Star className="size-5" aria-hidden="true" />,
   },
   {
     title: "Follow friends",
     description:
       "See what the people you trust are watching, liking and reviewing in your feed.",
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5" aria-hidden="true">
-        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-        <circle cx="9" cy="7" r="4" />
-        <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-      </svg>
-    ),
+    icon: <Users className="size-5" aria-hidden="true" />,
   },
 ];
 
@@ -48,23 +32,23 @@ function LoginForm() {
   const callbackUrl = searchParams.get("callbackUrl") ?? "/";
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center px-4 py-12">
-      <div className="grid md:grid-cols-2 gap-10 md:gap-16 items-center max-w-4xl w-full">
+    <div className="flex min-h-[80vh] items-center justify-center px-4 py-12">
+      <div className="grid w-full max-w-4xl items-center gap-10 md:grid-cols-2 md:gap-16">
         {/* Value props */}
-        <div className="space-y-8 order-2 md:order-1">
-          <h1 className="text-3xl font-bold leading-snug">
+        <div className="order-2 space-y-8 md:order-1">
+          <h1 className="font-display text-3xl font-bold leading-snug tracking-tight">
             The social network for{" "}
-            <span className="text-[var(--accent-green)]">YouTube lovers</span>.
+            <span className="text-primary">video lovers</span>.
           </h1>
           <ul className="space-y-6">
             {FEATURES.map(({ title, description, icon }) => (
               <li key={title} className="flex gap-4">
-                <span className="flex-shrink-0 w-10 h-10 rounded-md bg-[var(--accent-green)]/10 text-[var(--accent-green)] flex items-center justify-center">
+                <span className="flex size-10 flex-shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary">
                   {icon}
                 </span>
                 <div>
-                  <p className="font-semibold text-sm">{title}</p>
-                  <p className="text-sm text-[var(--text-muted)] mt-0.5">
+                  <p className="text-sm font-semibold">{title}</p>
+                  <p className="mt-0.5 text-sm text-muted">
                     {description}
                   </p>
                 </div>
@@ -74,14 +58,17 @@ function LoginForm() {
         </div>
 
         {/* Auth card */}
-        <div className="order-1 md:order-2 bg-[var(--bg-secondary)] border border-[var(--border)] rounded-lg p-8 text-center">
-          <h2 className="text-2xl font-bold mb-2">Sign in to YTBoxd</h2>
-          <p className="text-[var(--text-muted)] text-sm mb-6">
-            Track, rate and share the YouTube videos you watch.
+        <div className="order-1 rounded-2xl border border-border bg-card p-8 text-center md:order-2">
+          <div className="mb-5 flex justify-center">
+            <Logo size="lg" />
+          </div>
+          <h2 className="mb-2 font-display text-xl font-bold">Sign in</h2>
+          <p className="mb-6 text-sm text-muted">
+            Track, rate and share the videos you watch.
           </p>
           <button
             onClick={() => signIn("google", { callbackUrl })}
-            className="w-full flex items-center justify-center gap-3 bg-white text-gray-800 font-semibold py-2.5 px-4 rounded-md hover:bg-gray-100 transition-colors"
+            className="flex w-full items-center justify-center gap-3 rounded-lg bg-white px-4 py-2.5 font-semibold text-gray-800 transition-colors hover:bg-gray-100"
           >
             {/* Google G icon */}
             <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
@@ -92,7 +79,7 @@ function LoginForm() {
             </svg>
             Continue with Google
           </button>
-          <p className="text-xs text-[var(--text-dim)] mt-4">
+          <p className="mt-4 text-xs text-faint">
             Free forever. No ads, no tracking — just videos.
           </p>
         </div>

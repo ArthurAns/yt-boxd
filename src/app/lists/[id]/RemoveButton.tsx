@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { X } from "lucide-react";
 
 export default function RemoveButton({
   listId,
@@ -31,10 +32,10 @@ export default function RemoveButton({
     <button
       onClick={remove}
       disabled={loading}
-      className="flex-shrink-0 text-[var(--text-dim)] hover:text-red-400 transition-colors text-sm px-1 disabled:opacity-50"
+      className="flex-shrink-0 rounded-md p-1 text-faint transition-colors hover:bg-white/[0.06] hover:text-primary disabled:opacity-50"
       aria-label="Remove from list"
     >
-      ×
+      <X className="size-4" />
     </button>
   );
 }

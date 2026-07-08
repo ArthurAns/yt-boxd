@@ -11,7 +11,20 @@ import {
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { CircleCheck, Heart, RotateCcw } from "lucide-react";
 import { useToast } from "@/components/Toast";
+import StarRating from "@/components/StarRating";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { cn } from "@/lib/utils";
 
 // ─── Context ──────────────────────────────────────────────────────────────────
 
@@ -22,64 +35,33 @@ export function useLogModal() {
   return useContext(LogModalContext);
 }
 
-// ─── Star rating ──────────────────────────────────────────────────────────────
+// ─── Toggle chip (like / rewatch) ─────────────────────────────────────────────
 
-function StarRating({
-  value,
-  onChange,
+function ToggleChip({
+  pressed,
+  onPressedChange,
+  activeClass,
+  children,
 }: {
-  value: number | null;
-  onChange: (v: number | null) => void;
+  pressed: boolean;
+  onPressedChange: (v: boolean) => void;
+  activeClass: string;
+  children: React.ReactNode;
 }) {
-  const [hover, setHover] = useState<number | null>(null);
-
   return (
-    <div className="flex items-center gap-0.5" aria-label="Rating">
-      {[1, 2, 3, 4, 5].map((star) => {
-        const full = (hover ?? value ?? 0) >= star;
-        const half = !full && (hover ?? value ?? 0) >= star - 0.5;
-        return (
-          <div key={star} className="relative w-6 h-6 cursor-pointer">
-            <div
-              className="absolute left-0 top-0 w-1/2 h-full z-10"
-              onMouseEnter={() => setHover(star - 0.5)}
-              onMouseLeave={() => setHover(null)}
-              onClick={() => onChange(value === star - 0.5 ? null : star - 0.5)}
-            />
-            <div
-              className="absolute right-0 top-0 w-1/2 h-full z-10"
-              onMouseEnter={() => setHover(star)}
-              onMouseLeave={() => setHover(null)}
-              onClick={() => onChange(value === star ? null : star)}
-            />
-            <svg viewBox="0 0 24 24" className="w-6 h-6" aria-hidden="true">
-              {half && (
-                <defs>
-                  <linearGradient id={`rstar-${star}`}>
-                    <stop offset="50%" stopColor="var(--star-color)" />
-                    <stop offset="50%" stopColor="#444" />
-                  </linearGradient>
-                </defs>
-              )}
-              <polygon
-                points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"
-                fill={full ? "var(--star-color)" : half ? `url(#rstar-${star})` : "#444"}
-                stroke="none"
-              />
-            </svg>
-          </div>
-        );
-      })}
-      {value !== null && (
-        <button
-          type="button"
-          onClick={() => onChange(null)}
-          className="ml-2 text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
-        >
-          clear
-        </button>
+    <button
+      type="button"
+      aria-pressed={pressed}
+      onClick={() => onPressedChange(!pressed)}
+      className={cn(
+        "inline-flex h-9 items-center gap-1.5 rounded-lg border px-3 text-sm font-medium transition-colors [&_svg]:size-4",
+        pressed
+          ? activeClass
+          : "border-border-strong text-muted hover:border-white/30 hover:text-foreground"
       )}
-    </div>
+    >
+      {children}
+    </button>
   );
 }
 
@@ -175,7 +157,7 @@ export function ReviewForm({
       const data = await res.json();
       if (!res.ok) { setSubmitError(data.error ?? "Something went wrong."); return; }
 
-      toast("Review saved ✓");
+      toast("Review saved");
       router.refresh();
 
       if (onClose) {
@@ -194,8 +176,8 @@ export function ReviewForm({
   // ── Loading state (page context only) ─────────────────────────────────────
   if (!onClose && status === "loading") {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-[var(--text-muted)]">Loading…</div>
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-muted">Loading…</div>
       </div>
     );
   }
@@ -203,37 +185,33 @@ export function ReviewForm({
   // ── Success screen (page context only) ────────────────────────────────────
   if (!onClose && success) {
     return (
-      <div className="min-h-screen flex items-center justify-center px-4">
-        <div className="bg-[var(--bg-card)] border border-white/[0.06] rounded-lg p-8 max-w-md w-full text-center space-y-4">
-          <div className="text-4xl" aria-hidden="true">✓</div>
-          <h2 className="text-xl font-bold text-[var(--accent-green)]">Review saved!</h2>
+      <div className="flex min-h-screen items-center justify-center px-4">
+        <div className="w-full max-w-md space-y-4 rounded-2xl border border-border bg-card p-8 text-center">
+          <CircleCheck className="mx-auto size-10 text-watched" aria-hidden="true" />
+          <h2 className="font-display text-xl font-bold">Review saved</h2>
           {preview && (
-            <p className="text-[var(--text-muted)] text-sm">
+            <p className="text-sm text-muted">
               Your review of{" "}
-              <span className="text-[var(--text-primary)] font-medium">{preview.title}</span>{" "}
+              <span className="font-medium text-foreground">{preview.title}</span>{" "}
               has been added to your diary.
             </p>
           )}
           {quotaNotice && (
-            <p className="text-xs text-yellow-400 bg-yellow-900/20 rounded-md px-3 py-2">
+            <p className="rounded-lg bg-star-soft px-3 py-2 text-xs text-star">
               YouTube API quota reached today — extra video details will be filled in automatically when the quota resets.
             </p>
           )}
-          <div className="flex gap-3 justify-center pt-2">
-            <button
-              onClick={resetForm}
-              className="px-4 py-2 rounded-md bg-[var(--bg-secondary)] hover:bg-[var(--bg-secondary)]/80 text-sm transition-colors"
-            >
+          <div className="flex justify-center gap-3 pt-2">
+            <Button variant="secondary" onClick={resetForm}>
               Review another
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={() =>
                 router.push(`/u/${(session?.user as { username?: string })?.username ?? session?.user?.email}`)
               }
-              className="px-4 py-2 rounded-md bg-[var(--accent-green)] hover:bg-[var(--accent-green-dark)] text-black text-sm font-semibold transition-colors"
             >
               View diary
-            </button>
+            </Button>
           </div>
         </div>
       </div>
@@ -244,116 +222,113 @@ export function ReviewForm({
   const formContent = (
     <form onSubmit={handleSubmit} className="space-y-5">
       {/* URL input */}
-      <div className="space-y-1.5">
-        <label className="text-sm font-medium text-[var(--text-muted)]">YouTube URL or ID</label>
-        <input
+      <div className="space-y-2">
+        <Label htmlFor="log-url">YouTube URL or ID</Label>
+        <Input
+          id="log-url"
           type="text"
           value={url}
           onChange={(e) => setUrl(e.target.value)}
           placeholder="https://youtube.com/watch?v=… or youtu.be/…"
           required
           autoFocus={!initialYoutubeId}
-          className="w-full bg-[var(--bg-secondary)] border border-white/10 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent-green)] placeholder:text-[var(--text-dim)]"
         />
       </div>
 
       {/* Preview */}
       {previewLoading && (
-        <div className="text-sm text-[var(--text-muted)] animate-pulse">Fetching video info…</div>
+        <div className="animate-pulse text-sm text-muted">Fetching video info…</div>
       )}
-      {previewError && <div className="text-sm text-red-400">{previewError}</div>}
+      {previewError && <div className="text-sm text-primary">{previewError}</div>}
       {preview && (
-        <div className="flex gap-3 bg-[var(--bg-card)] border border-white/[0.06] rounded-lg p-3 items-start">
+        <div className="flex items-start gap-3 rounded-xl border border-border bg-card p-3">
           <Image
             src={preview.thumbnail}
             alt={preview.title}
             width={120}
             height={68}
-            className="rounded-md object-cover flex-shrink-0"
+            className="flex-shrink-0 rounded-lg object-cover"
           />
           <div className="min-w-0">
-            <p className="font-medium text-sm leading-snug line-clamp-2">{preview.title}</p>
-            <p className="text-xs text-[var(--text-muted)] mt-1">{preview.channel}</p>
+            <p className="line-clamp-2 text-sm font-medium leading-snug">{preview.title}</p>
+            <p className="mt-1 text-xs text-muted">{preview.channel}</p>
           </div>
         </div>
       )}
 
       {/* Date */}
-      <div className="space-y-1.5">
-        <label className="text-sm font-medium text-[var(--text-muted)]">Date watched</label>
-        <input
+      <div className="space-y-2">
+        <Label htmlFor="log-date">Date watched</Label>
+        <Input
+          id="log-date"
           type="date"
           value={watchedDate}
           onChange={(e) => setWatchedDate(e.target.value)}
           required
-          className="bg-[var(--bg-secondary)] border border-white/10 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent-green)] [color-scheme:dark]"
+          className="w-auto [color-scheme:dark]"
         />
       </div>
 
       {/* Rating */}
-      <div className="space-y-1.5">
-        <label className="text-sm font-medium text-[var(--text-muted)]">
-          Rating{rating !== null && <span className="text-[var(--star-color)] ml-1">{rating} ★</span>}
-        </label>
-        <StarRating value={rating} onChange={setRating} />
+      <div className="space-y-2">
+        <Label>
+          Rating
+          {rating !== null && <span className="ml-1.5 normal-case text-star">{rating} ★</span>}
+        </Label>
+        <StarRating value={rating} onChange={setRating} size={26} />
       </div>
 
       {/* Toggles */}
-      <div className="flex gap-6">
-        <label className="flex items-center gap-2 cursor-pointer select-none">
-          <input
-            type="checkbox"
-            checked={liked}
-            onChange={(e) => setLiked(e.target.checked)}
-            className="w-4 h-4 accent-[var(--accent-green)]"
-          />
-          <span className="text-sm"><span className="text-red-400 mr-1" aria-hidden="true">♥</span> Like</span>
-        </label>
-        <label className="flex items-center gap-2 cursor-pointer select-none">
-          <input
-            type="checkbox"
-            checked={rewatch}
-            onChange={(e) => setRewatch(e.target.checked)}
-            className="w-4 h-4 accent-[var(--accent-green)]"
-          />
-          <span className="text-sm"><span className="mr-1" aria-hidden="true">↺</span> Rewatch</span>
-        </label>
+      <div className="flex gap-2.5">
+        <ToggleChip
+          pressed={liked}
+          onPressedChange={setLiked}
+          activeClass="border-primary/60 bg-primary-soft text-primary"
+        >
+          <Heart className={liked ? "fill-current" : ""} />
+          Like
+        </ToggleChip>
+        <ToggleChip
+          pressed={rewatch}
+          onPressedChange={setRewatch}
+          activeClass="border-watched/60 bg-watched-soft text-watched"
+        >
+          <RotateCcw />
+          Rewatch
+        </ToggleChip>
       </div>
 
       {/* Review text */}
-      <div className="space-y-1.5">
-        <label className="text-sm font-medium text-[var(--text-muted)]">
-          Review <span className="text-[var(--text-dim)]">(optional)</span>
-        </label>
-        <textarea
+      <div className="space-y-2">
+        <Label htmlFor="log-review">
+          Review <span className="font-normal normal-case text-faint">(optional)</span>
+        </Label>
+        <Textarea
+          id="log-review"
           value={review}
           onChange={(e) => setReview(e.target.value)}
           rows={4}
           placeholder="What did you think?"
-          className="w-full bg-[var(--bg-secondary)] border border-white/10 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent-green)] resize-none placeholder:text-[var(--text-dim)]"
+          className="resize-none"
         />
       </div>
 
-      {submitError && <p className="text-sm text-red-400">{submitError}</p>}
+      {submitError && <p className="text-sm text-primary">{submitError}</p>}
 
       {/* Actions */}
-      <div className={`flex gap-3 ${onClose ? "justify-end" : ""}`}>
+      <div className={cn("flex gap-3", onClose && "justify-end")}>
         {onClose && (
-          <button
-            type="button"
-            onClick={onClose}
-            className="px-4 py-2.5 rounded-lg border border-[var(--border)] text-sm text-[var(--text-muted)] hover:text-white hover:border-white/30 transition-colors"
-          >
+          <Button type="button" variant="outline" onClick={onClose}>
             Cancel
-          </button>
+          </Button>
         )}
-        <button
+        <Button
           type="submit"
           disabled={submitting || !preview}
-          className={`py-2.5 rounded-lg bg-[var(--accent-green)] hover:bg-[var(--accent-green-dark)] text-black font-semibold text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${onClose ? "px-6" : "w-full px-4"}`}
+          className={onClose ? "px-6" : "w-full"}
         >
           {submitting ? "Saving…" : "Save review"}
-        </button>
+        </Button>
       </div>
     </form>
   );
@@ -361,9 +336,9 @@ export function ReviewForm({
   // Page context: wrapped in full-page layout with heading
   if (!onClose) {
     return (
-      <div className="min-h-screen py-12 px-4">
-        <div className="max-w-xl mx-auto space-y-6">
-          <h1 className="text-2xl font-bold">Write a review</h1>
+      <div className="min-h-screen px-4 py-12">
+        <div className="mx-auto max-w-xl space-y-6">
+          <h1 className="font-display text-2xl font-bold">Write a review</h1>
           {formContent}
         </div>
       </div>
@@ -389,69 +364,18 @@ export function LogModalProvider({ children }: { children: React.ReactNode }) {
 
   const close = useCallback(() => setIsOpen(false), []);
 
-  // Scroll lock
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-    return () => { document.body.style.overflow = ""; };
-  }, [isOpen]);
-
-  // ESC to close
-  useEffect(() => {
-    if (!isOpen) return;
-    function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape") close();
-    }
-    document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
-  }, [isOpen, close]);
-
   return (
     <LogModalContext.Provider value={{ open }}>
       {children}
 
-      {isOpen && (
-        <div
-          className="fixed inset-0 z-[200] flex items-center justify-center p-4"
-          role="dialog"
-          aria-modal="true"
-          aria-label="Write a review"
-        >
-          {/* Backdrop */}
-          <div
-            className="absolute inset-0 bg-black/70 backdrop-blur-sm"
-            aria-hidden="true"
-            onClick={close}
-          />
-
-          {/* Dialog panel */}
-          <div className="relative z-10 w-full max-w-lg max-h-[90vh] overflow-y-auto bg-[var(--bg-primary)] border border-[var(--border)] rounded-xl shadow-2xl animate-slide-up">
-            {/* Header */}
-            <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-[var(--border)]">
-              <h2 className="text-lg font-bold">Write a review</h2>
-              <button
-                onClick={close}
-                aria-label="Close"
-                className="w-8 h-8 flex items-center justify-center rounded-md text-[var(--text-muted)] hover:text-white hover:bg-white/10 transition-colors text-xl leading-none"
-              >
-                ×
-              </button>
-            </div>
-
-            {/* Form */}
-            <div className="px-6 py-5">
-              <ReviewForm
-                key={formKey}
-                initialYoutubeId={youtubeId}
-                onClose={close}
-              />
-            </div>
-          </div>
-        </div>
-      )}
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Write a review</DialogTitle>
+          </DialogHeader>
+          <ReviewForm key={formKey} initialYoutubeId={youtubeId} onClose={close} />
+        </DialogContent>
+      </Dialog>
     </LogModalContext.Provider>
   );
 }

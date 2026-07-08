@@ -3,7 +3,7 @@ import { Skeleton } from "@/components/Skeleton";
 export default function Loading() {
   return (
     <div className="min-h-screen">
-      <div className="bg-[var(--bg-secondary)] border-b border-[var(--border)]">
+      <div className="border-b border-border bg-inset">
         <div className="mx-auto max-w-5xl px-4 py-8 flex items-end gap-6">
           <Skeleton className="w-20 h-20 rounded-full flex-shrink-0" />
           <div className="flex-1 space-y-2">
@@ -22,7 +22,7 @@ export default function Loading() {
         {Array.from({ length: 4 }, (_, i) => (
           <div
             key={i}
-            className="flex gap-3 bg-[var(--bg-card)] border border-white/[0.06] rounded-lg p-3"
+            className="flex gap-3 rounded-2xl border border-border bg-card p-3"
           >
             <Skeleton className="w-24 h-14 flex-shrink-0" />
             <div className="flex-1 space-y-2">

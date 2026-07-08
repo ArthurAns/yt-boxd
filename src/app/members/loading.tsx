@@ -9,7 +9,7 @@ export default function Loading() {
           {Array.from({ length: 9 }, (_, i) => (
             <div
               key={i}
-              className="flex items-center gap-3 bg-[var(--bg-card)] border border-white/[0.06] rounded-lg p-4"
+              className="flex items-center gap-3 rounded-2xl border border-border bg-card p-4"
             >
               <Skeleton className="w-11 h-11 rounded-full flex-shrink-0" />
               <div className="flex-1 space-y-2">

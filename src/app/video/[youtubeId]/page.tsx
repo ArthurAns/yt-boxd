@@ -111,11 +111,11 @@ export default async function VideoPage({
   return (
     <div className="min-h-screen">
       {/* ── Hero ── */}
-      <div className="bg-[var(--bg-secondary)] border-b border-[var(--border)]">
-        <div className="mx-auto max-w-5xl px-4 py-8">
-          <div className="flex flex-col md:flex-row gap-8">
+      <div className="border-b border-border bg-inset">
+        <div className="mx-auto max-w-5xl px-4 py-10">
+          <div className="flex flex-col gap-8 md:flex-row">
             {/* Embed / thumbnail */}
-            <div className="w-full md:w-[420px] flex-shrink-0">
+            <div className="w-full flex-shrink-0 md:w-[440px]">
               <VideoEmbed
                 youtubeId={youtubeId}
                 title={video.title}
@@ -124,49 +124,59 @@ export default async function VideoPage({
             </div>
 
             {/* Info */}
-            <div className="flex-1 min-w-0 flex flex-col gap-3">
+            <div className="flex min-w-0 flex-1 flex-col gap-4">
               <div>
-                <h1 className="text-2xl font-bold leading-snug">{video.title}</h1>
-                {video.channelName && (
-                  <p className="text-[var(--text-muted)] text-sm mt-1">
-                    {video.channelName}
-                  </p>
-                )}
-              </div>
-
-              {/* Video metadata row */}
-              <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-[var(--text-dim)]">
-                {video.duration && <span>{video.duration}</span>}
-                {video.publishedAt && (
-                  <span>
-                    {new Date(video.publishedAt).toLocaleDateString("en-GB", {
-                      month: "long",
-                      year: "numeric",
-                    })}
+                <h1 className="font-display text-2xl font-bold leading-snug">
+                  {video.title}
+                </h1>
+                <div className="mt-1.5 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                  {video.channelName && (
+                    <p className="text-sm font-medium text-muted">{video.channelName}</p>
+                  )}
+                  <span className="flex flex-wrap gap-x-3 text-xs text-faint">
+                    {video.duration && <span>{video.duration}</span>}
+                    {video.publishedAt && (
+                      <span>
+                        {new Date(video.publishedAt).toLocaleDateString("en-GB", {
+                          month: "long",
+                          year: "numeric",
+                        })}
+                      </span>
+                    )}
+                    {video.viewCount != null && (
+                      <span>{formatCount(video.viewCount)} views</span>
+                    )}
                   </span>
-                )}
-                {video.viewCount != null && (
-                  <span>{formatCount(video.viewCount)} views</span>
-                )}
+                </div>
               </div>
 
               {/* Community stats */}
-              <div className="flex gap-6 mt-1">
-                <div className="text-center">
-                  <div className="text-white font-bold text-lg leading-none">
+              <div className="flex flex-wrap items-end gap-x-8 gap-y-4">
+                <div>
+                  <div className="font-display text-xl font-bold leading-none">
                     {watchCount}
                   </div>
-                  <div className="text-[var(--text-muted)] text-xs mt-0.5 uppercase tracking-wide">
+                  <div className="mt-1 text-[11px] font-medium uppercase tracking-wider text-faint">
                     Watched
                   </div>
                 </div>
                 {avgRating !== null && (
-                  <div className="text-center">
-                    <div className="text-[var(--star-color)] font-bold text-lg leading-none">
+                  <div>
+                    <div className="font-display text-xl font-bold leading-none text-star">
                       {avgRating.toFixed(1)}
                     </div>
-                    <div className="text-[var(--text-muted)] text-xs mt-0.5 uppercase tracking-wide">
+                    <div className="mt-1 text-[11px] font-medium uppercase tracking-wider text-faint">
                       Avg rating
+                    </div>
+                  </div>
+                )}
+                {likeCount > 0 && (
+                  <div>
+                    <div className="font-display text-xl font-bold leading-none text-primary">
+                      {likeCount}
+                    </div>
+                    <div className="mt-1 text-[11px] font-medium uppercase tracking-wider text-faint">
+                      Liked
                     </div>
                   </div>
                 )}
@@ -176,84 +186,72 @@ export default async function VideoPage({
                     role="img"
                     aria-label={`Rating distribution across ${ratings.length} rating${ratings.length !== 1 ? "s" : ""}`}
                   >
-                    <span className="text-[10px] text-[var(--text-dim)] leading-none pb-px">
-                      ½★
-                    </span>
-                    <div className="flex items-end gap-px h-9">
+                    <span className="pb-px text-[10px] leading-none text-faint">½★</span>
+                    <div className="flex h-9 items-end gap-[3px]">
                       {ratingBuckets.map(({ value, count }) => (
                         <div
                           key={value}
                           title={`${value}★ — ${count} rating${count !== 1 ? "s" : ""}`}
-                          className={`w-2 rounded-sm ${
+                          className={`w-2 rounded-sm transition-colors ${
                             count > 0
-                              ? "bg-[var(--star-color)]/80 hover:bg-[var(--star-color)]"
+                              ? "bg-star/80 hover:bg-star"
                               : "bg-white/10"
-                          } transition-colors`}
+                          }`}
                           style={{
-                            height: `${Math.max((count / maxBucket) * 100, 6)}%`,
+                            height: `${Math.max((count / maxBucket) * 100, 8)}%`,
                           }}
                         />
                       ))}
                     </div>
-                    <span className="text-[10px] text-[var(--text-dim)] leading-none pb-px">
-                      5★
-                    </span>
-                  </div>
-                )}
-                {likeCount > 0 && (
-                  <div className="text-center">
-                    <div className="text-red-400 font-bold text-lg leading-none">
-                      {likeCount}
-                    </div>
-                    <div className="text-[var(--text-muted)] text-xs mt-0.5 uppercase tracking-wide">
-                      Liked
-                    </div>
+                    <span className="pb-px text-[10px] leading-none text-faint">5★</span>
                   </div>
                 )}
               </div>
 
               {/* Quick actions + diary entry badge */}
-              <div className="mt-auto pt-2 space-y-3">
-                <VideoQuickActions
-                  youtubeId={youtubeId}
-                  undatedEntry={undatedEntry}
-                  hasDatedEntry={!!ownEntry}
-                  isLoggedIn={!!currentUserId}
-                />
+              <div className="mt-auto space-y-3 pt-2">
+                <div className="flex flex-wrap items-center gap-2">
+                  <VideoQuickActions
+                    youtubeId={youtubeId}
+                    undatedEntry={undatedEntry}
+                    hasDatedEntry={!!ownEntry}
+                    isLoggedIn={!!currentUserId}
+                  />
+                  <WatchlistButton
+                    youtubeId={youtubeId}
+                    initialInWatchlist={inWatchlist as boolean}
+                    isLoggedIn={!!currentUserId}
+                  />
+                </div>
                 {ownEntry && (
-                  <div className="flex items-center gap-2 bg-[var(--bg-card)] border border-white/[0.06] rounded-lg px-3 py-2 text-sm flex-wrap">
-                    <span className="text-[var(--accent-green)] text-xs font-bold uppercase tracking-wide">
+                  <div className="flex flex-wrap items-center gap-2 rounded-xl border border-border bg-card px-3 py-2 text-sm">
+                    <span className="text-xs font-bold uppercase tracking-wide text-primary">
                       Your review
                     </span>
-                    <span className="text-[var(--text-muted)] text-xs">
+                    <span className="text-xs text-muted">
                       {formatDate(ownEntry.watchedDate)}
                     </span>
                     {ownEntry.rating && (
                       <StarDisplay rating={ownEntry.rating} className="" />
                     )}
                     {ownEntry.liked && (
-                      <span className="text-red-400 text-xs" role="img" aria-label="Liked">♥</span>
+                      <span className="text-xs text-primary" role="img" aria-label="Liked">♥</span>
                     )}
                     {ownEntry.rewatch && (
-                      <span className="text-[var(--text-muted)] text-xs" role="img" aria-label="Rewatch">↺</span>
+                      <span className="text-xs text-muted" role="img" aria-label="Rewatch">↺</span>
                     )}
                   </div>
                 )}
-                <WatchlistButton
-                  youtubeId={youtubeId}
-                  initialInWatchlist={inWatchlist as boolean}
-                  isLoggedIn={!!currentUserId}
-                />
               </div>
             </div>
           </div>
 
           {/* Description (collapsed) */}
           {video.description && (
-            <details className="mt-6 group">
-              <summary className="cursor-pointer text-xs text-[var(--text-muted)] hover:text-white transition-colors list-none flex items-center gap-1 select-none">
+            <details className="group mt-6">
+              <summary className="flex cursor-pointer select-none list-none items-center gap-1 text-xs font-medium text-muted transition-colors hover:text-foreground">
                 <svg
-                  className="w-3 h-3 transition-transform group-open:rotate-90"
+                  className="h-3 w-3 transition-transform group-open:rotate-90"
                   fill="currentColor"
                   viewBox="0 0 20 20"
                 >
@@ -265,7 +263,7 @@ export default async function VideoPage({
                 </svg>
                 Description
               </summary>
-              <p className="mt-2 text-sm text-[var(--text-dim)] whitespace-pre-line max-w-2xl leading-relaxed">
+              <p className="mt-2 max-w-2xl whitespace-pre-line text-sm leading-relaxed text-faint">
                 {video.description}
               </p>
             </details>
@@ -274,33 +272,33 @@ export default async function VideoPage({
       </div>
 
       {/* ── Reviews & watches ── */}
-      <div className="mx-auto max-w-5xl px-4 py-8 space-y-10">
+      <div className="mx-auto max-w-5xl space-y-10 px-4 py-10">
         {/* Reviews */}
         {reviewEntries.length > 0 && (
           <section id="comments" className="scroll-mt-20">
-            <h2 className="text-xs font-bold uppercase tracking-widest text-[var(--text-muted)] mb-4">
+            <h2 className="mb-4 text-xs font-bold uppercase tracking-widest text-faint">
               Reviews
             </h2>
-            <div className="space-y-4">
+            <div className="space-y-3">
               {reviewEntries.map((entry) => (
                 <div
                   key={entry.id}
-                  className="bg-[var(--bg-card)] border border-white/[0.06] rounded-lg p-4 space-y-2"
+                  className="space-y-2 rounded-2xl border border-border bg-card p-4"
                 >
                   <div className="flex items-center gap-3">
                     <Link href={`/u/${entry.user.username ?? entry.user.name}`}>
                       <Avatar src={entry.user.image} name={entry.user.name} size={32} interactive />
                     </Link>
-                    <div className="flex-1 min-w-0">
+                    <div className="min-w-0 flex-1">
                       <Link
                         href={`/u/${entry.user.username ?? entry.user.name}`}
-                        className="font-medium text-sm hover:text-[var(--accent-green)] transition-colors"
+                        className="text-sm font-semibold transition-colors hover:text-primary"
                       >
                         {entry.user.name ?? entry.user.username}
                       </Link>
-                      <div className="flex items-center gap-2 flex-wrap">
+                      <div className="flex flex-wrap items-center gap-2">
                         {entry.watchedDate && (
-                          <span className="text-xs text-[var(--text-muted)]">
+                          <span className="text-xs text-faint">
                             {formatDate(entry.watchedDate)}
                           </span>
                         )}
@@ -308,20 +306,20 @@ export default async function VideoPage({
                           <StarDisplay rating={entry.rating} className="" />
                         )}
                         {entry.liked && (
-                          <span className="text-red-400 text-xs" role="img" aria-label="Liked">♥</span>
+                          <span className="text-xs text-primary" role="img" aria-label="Liked">♥</span>
                         )}
                         {entry.rewatch && (
-                          <span className="text-[var(--text-muted)] text-xs" title="Rewatch" role="img" aria-label="Rewatch">
+                          <span className="text-xs text-muted" title="Rewatch" role="img" aria-label="Rewatch">
                             ↺
                           </span>
                         )}
                       </div>
                     </div>
                   </div>
-                  <p className="text-sm text-[var(--text-dim)] leading-relaxed whitespace-pre-line pl-11">
+                  <p className="whitespace-pre-line pl-11 text-sm leading-relaxed text-muted">
                     {entry.review}
                   </p>
-                  <div className="pl-11 flex items-center gap-4 mt-2">
+                  <div className="mt-2 flex items-center gap-4 pl-11">
                     <LikeButton
                       diaryEntryId={entry.id}
                       initialLiked={entry.likes.some((l) => l.userId === currentUserId)}
@@ -344,7 +342,7 @@ export default async function VideoPage({
         {/* Watch-only entries (no review) */}
         {watchOnlyEntries.length > 0 && (
           <section>
-            <h2 className="text-xs font-bold uppercase tracking-widest text-[var(--text-muted)] mb-4">
+            <h2 className="mb-4 text-xs font-bold uppercase tracking-widest text-faint">
               Also watched by
             </h2>
             <div className="flex flex-wrap gap-2">
@@ -352,15 +350,15 @@ export default async function VideoPage({
                 <Link
                   key={entry.id}
                   href={`/u/${entry.user.username ?? entry.user.name}`}
-                  className="flex items-center gap-2 bg-[var(--bg-card)] border border-white/[0.06] rounded-full pl-1 pr-3 py-1 hover:bg-[var(--bg-secondary)] hover:border-white/[0.14] transition-colors text-sm"
+                  className="flex items-center gap-2 rounded-full border border-border bg-card py-1 pl-1 pr-3 text-sm transition-colors hover:border-border-strong hover:bg-card-hover"
                 >
                   <Avatar src={entry.user.image} name={entry.user.name} size={24} interactive />
-                  <span className="text-[var(--text-muted)] text-xs">
+                  <span className="text-xs text-muted">
                     {entry.user.username ?? entry.user.name}
                   </span>
                   {entry.rating && (
                     <span
-                      className="text-[var(--star-color)] text-xs"
+                      className="text-xs text-star"
                       role="img"
                       aria-label={`Rated ${entry.rating} out of 5 stars`}
                     >
@@ -374,9 +372,9 @@ export default async function VideoPage({
         )}
 
         {watchCount === 0 && (
-          <div className="text-center py-16 text-[var(--text-dim)]">
+          <div className="py-16 text-center text-faint">
             <p className="text-lg">No one has watched this video yet.</p>
-            <p className="text-sm mt-1">Be the first to mark it as watched or write a review.</p>
+            <p className="mt-1 text-sm">Be the first to mark it as watched or write a review.</p>
           </div>
         )}
       </div>

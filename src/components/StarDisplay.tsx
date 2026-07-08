@@ -6,7 +6,7 @@ function StarIcon({ className = "" }: { className?: string }) {
     <svg
       viewBox="0 0 24 24"
       fill="currentColor"
-      className={`w-[1.1em] h-[1.1em] ${className}`}
+      className={`w-[1.05em] h-[1.05em] ${className}`}
       aria-hidden="true"
     >
       <polygon points={STAR_POINTS} />
@@ -16,8 +16,8 @@ function StarIcon({ className = "" }: { className?: string }) {
 
 function HalfStarIcon() {
   return (
-    <span className="relative inline-block w-[1.1em] h-[1.1em]" aria-hidden="true">
-      <StarIcon className="absolute inset-0 text-[var(--star-empty)]" />
+    <span className="relative inline-block w-[1.05em] h-[1.05em]" aria-hidden="true">
+      <StarIcon className="absolute inset-0 star-empty" />
       <span className="absolute inset-0 w-1/2 overflow-hidden">
         <StarIcon className="absolute inset-0" />
       </span>
@@ -39,7 +39,7 @@ export default function StarDisplay({
     <span
       role="img"
       aria-label={`Rated ${rating} out of 5 stars`}
-      className={`inline-flex items-center gap-px text-[var(--star-color)] ${className}`}
+      className={`inline-flex items-center gap-px text-star ${className}`}
     >
       {Array.from({ length: full }, (_, i) => (
         <StarIcon key={i} />

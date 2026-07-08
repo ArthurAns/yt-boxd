@@ -9,7 +9,7 @@ export default function Loading() {
           {Array.from({ length: 6 }, (_, i) => (
             <div
               key={i}
-              className="bg-[var(--bg-card)] border border-white/[0.06] rounded-lg p-4 space-y-3"
+              className="rounded-2xl border border-border bg-card p-4 space-y-3"
             >
               <Skeleton className="aspect-[4/1] w-full" />
               <Skeleton className="h-4 w-1/2" />

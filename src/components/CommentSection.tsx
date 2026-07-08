@@ -2,7 +2,9 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { MessageCircle, X } from "lucide-react";
 import Avatar from "@/components/Avatar";
+import { Button } from "@/components/ui/button";
 
 type Comment = {
   id: string;
@@ -60,12 +62,13 @@ export default function CommentSection({
   const total = comments.length;
 
   return (
-    <div className="pl-11 mt-2">
+    <div className="mt-2 pl-11">
       {/* Toggle */}
       <button
         onClick={() => setOpen((v) => !v)}
-        className="text-xs text-[var(--text-dim)] hover:text-[var(--text-muted)] transition-colors"
+        className="inline-flex items-center gap-1.5 text-xs font-medium text-faint transition-colors hover:text-muted"
       >
+        <MessageCircle className="size-3.5" aria-hidden="true" />
         {open
           ? "Hide comments"
           : total > 0
@@ -74,26 +77,26 @@ export default function CommentSection({
       </button>
 
       {open && (
-        <div className="mt-3 space-y-3">
+        <div className="mt-3 space-y-3 animate-fade-in">
           {/* Existing comments */}
           {comments.map((comment) => (
-            <div key={comment.id} className="flex gap-2 items-start group">
+            <div key={comment.id} className="group flex items-start gap-2">
               <Link href={`/u/${comment.user.username ?? comment.user.name}`}>
                 <Avatar src={comment.user.image} name={comment.user.name} size={22} interactive />
               </Link>
-              <div className="flex-1 min-w-0">
-                <span className="text-xs font-medium text-[var(--text-muted)] mr-1.5">
+              <div className="min-w-0 flex-1">
+                <span className="mr-1.5 text-xs font-medium text-foreground">
                   {comment.user.username ?? comment.user.name}
                 </span>
-                <span className="text-xs text-[var(--text-dim)]">{comment.body}</span>
+                <span className="text-xs text-muted">{comment.body}</span>
               </div>
               {comment.user.id === currentUserId && (
                 <button
                   onClick={() => deleteComment(comment.id)}
-                  className="text-[var(--text-dim)] hover:text-red-400 text-xs opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0"
+                  className="flex-shrink-0 text-faint opacity-0 transition-opacity hover:text-primary group-hover:opacity-100"
                   aria-label="Delete comment"
                 >
-                  ×
+                  <X className="size-3.5" />
                 </button>
               )}
             </div>
@@ -101,25 +104,21 @@ export default function CommentSection({
 
           {/* Add comment form */}
           {isLoggedIn ? (
-            <form onSubmit={submit} className="flex gap-2 mt-1">
+            <form onSubmit={submit} className="mt-1 flex gap-2">
               <input
                 type="text"
                 value={body}
                 onChange={(e) => setBody(e.target.value)}
                 placeholder="Add a comment…"
                 maxLength={1000}
-                className="flex-1 bg-[var(--bg-secondary)] border border-white/10 rounded-md px-3 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-[var(--accent-green)] placeholder:text-[var(--text-dim)]"
+                className="h-8 flex-1 rounded-lg border border-border-strong bg-inset px-3 text-xs text-foreground placeholder:text-faint transition-colors hover:border-white/25 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/40"
               />
-              <button
-                type="submit"
-                disabled={submitting || !body.trim()}
-                className="text-xs px-3 py-1.5 bg-[var(--accent-green)] hover:bg-[var(--accent-green-dark)] text-black font-semibold rounded-md transition-colors disabled:opacity-50"
-              >
+              <Button type="submit" size="sm" disabled={submitting || !body.trim()}>
                 Post
-              </button>
+              </Button>
             </form>
           ) : (
-            <Link href="/login" className="text-xs text-[var(--accent-green)] hover:underline">
+            <Link href="/login" className="text-xs font-medium text-primary hover:underline">
               Sign in to comment
             </Link>
           )}

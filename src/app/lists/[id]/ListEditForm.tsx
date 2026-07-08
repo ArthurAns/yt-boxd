@@ -2,7 +2,19 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Pencil } from "lucide-react";
 import { useToast } from "@/components/Toast";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 export default function ListEditForm({
   listId,
@@ -23,11 +35,13 @@ export default function ListEditForm({
   const router = useRouter();
   const toast = useToast();
 
-  function cancel() {
-    setName(initialName);
-    setDescription(initialDescription);
-    setIsPublic(initialIsPublic);
-    setOpen(false);
+  function onOpenChange(next: boolean) {
+    if (!next) {
+      setName(initialName);
+      setDescription(initialDescription);
+      setIsPublic(initialIsPublic);
+    }
+    setOpen(next);
   }
 
   async function save(e: React.FormEvent) {
@@ -59,78 +73,62 @@ export default function ListEditForm({
     }
   }
 
-  if (!open) {
-    return (
-      <button
-        onClick={() => setOpen(true)}
-        className="flex-shrink-0 text-xs text-[var(--text-dim)] hover:text-[var(--text-muted)] border border-[var(--border)] rounded-md px-2.5 py-1 transition-colors"
-      >
-        Edit
-      </button>
-    );
-  }
-
   return (
-    <form
-      onSubmit={save}
-      className="mt-4 space-y-3 bg-[var(--bg-card)] border border-[var(--border)] rounded-lg p-4"
-    >
-      <div className="space-y-1">
-        <label className="text-xs text-[var(--text-muted)]" htmlFor="edit-name">
-          List name
-        </label>
-        <input
-          id="edit-name"
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-          maxLength={100}
-          className="w-full bg-[var(--bg-secondary)] border border-white/10 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent-green)]"
-        />
-      </div>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogTrigger className="inline-flex h-8 flex-shrink-0 items-center gap-1.5 rounded-lg border border-border-strong px-2.5 text-xs font-semibold text-muted outline-none transition-colors hover:border-white/30 hover:text-foreground focus-visible:ring-2 focus-visible:ring-primary">
+        <Pencil className="size-3" />
+        Edit
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Edit list</DialogTitle>
+        </DialogHeader>
+        <form onSubmit={save} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="edit-name">List name</Label>
+            <Input
+              id="edit-name"
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              maxLength={100}
+            />
+          </div>
 
-      <div className="space-y-1">
-        <label className="text-xs text-[var(--text-muted)]" htmlFor="edit-desc">
-          Description
-        </label>
-        <textarea
-          id="edit-desc"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          rows={3}
-          maxLength={500}
-          placeholder="What's this list about?"
-          className="w-full bg-[var(--bg-secondary)] border border-white/10 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent-green)] resize-none placeholder:text-[var(--text-dim)]"
-        />
-      </div>
+          <div className="space-y-2">
+            <Label htmlFor="edit-desc">Description</Label>
+            <Textarea
+              id="edit-desc"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              rows={3}
+              maxLength={500}
+              placeholder="What's this list about?"
+              className="resize-none"
+            />
+          </div>
 
-      <label className="flex items-center gap-2 cursor-pointer select-none text-sm">
-        <input
-          type="checkbox"
-          checked={isPublic}
-          onChange={(e) => setIsPublic(e.target.checked)}
-          className="w-4 h-4 accent-[var(--accent-green)]"
-        />
-        Public list
-      </label>
+          <label className="flex cursor-pointer select-none items-center gap-2 text-sm">
+            <input
+              type="checkbox"
+              checked={isPublic}
+              onChange={(e) => setIsPublic(e.target.checked)}
+              className="size-4 accent-[var(--color-primary)]"
+            />
+            Public list
+          </label>
 
-      <div className="flex gap-2 pt-1">
-        <button
-          type="submit"
-          disabled={saving || !name.trim()}
-          className="px-4 py-1.5 rounded-lg bg-[var(--accent-green)] hover:bg-[var(--accent-green-dark)] text-black text-sm font-semibold transition-colors disabled:opacity-50"
-        >
-          {saving ? "Saving…" : "Save"}
-        </button>
-        <button
-          type="button"
-          onClick={cancel}
-          className="px-4 py-1.5 rounded-lg border border-[var(--border)] text-[var(--text-muted)] hover:text-white text-sm transition-colors"
-        >
-          Cancel
-        </button>
-      </div>
-    </form>
+          <div className="flex justify-end gap-2 pt-1">
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+              Cancel
+            </Button>
+            <Button type="submit" disabled={saving || !name.trim()}>
+              {saving ? "Saving…" : "Save"}
+            </Button>
+          </div>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 }

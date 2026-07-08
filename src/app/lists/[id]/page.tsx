@@ -60,59 +60,59 @@ export default async function ListPage({
   return (
     <div className="min-h-screen">
       {/* Header */}
-      <div className="bg-[var(--bg-secondary)] border-b border-[var(--border)]">
-        <div className="mx-auto max-w-4xl px-4 py-8 space-y-3">
-          <Link
-            href="/lists"
-            className="text-[var(--accent-green)] text-sm hover:underline"
-          >
-            ← Lists
-          </Link>
-          <div className="flex items-start justify-between gap-4">
-            <div className="space-y-1 min-w-0">
-              <h1 className="text-2xl font-bold leading-snug">{list.name}</h1>
-              {list.description && (
-                <p className="text-[var(--text-muted)] text-sm max-w-xl">{list.description}</p>
-              )}
-            </div>
-            <div className="flex items-center gap-2 flex-shrink-0">
-              {!list.isPublic && (
-                <span className="text-xs border border-[var(--border)] text-[var(--text-muted)] px-2 py-0.5 rounded-md">
-                  Private
-                </span>
-              )}
-              {isOwner && (
-                <ListEditForm
-                  listId={list.id}
-                  initialName={list.name}
-                  initialDescription={list.description ?? ""}
-                  initialIsPublic={list.isPublic}
-                />
-              )}
-            </div>
+      <div className="mx-auto max-w-4xl space-y-3 px-4 pt-10 pb-6">
+        <Link
+          href="/lists"
+          className="text-sm font-medium text-primary hover:underline"
+        >
+          ← Lists
+        </Link>
+        <div className="flex items-start justify-between gap-4">
+          <div className="min-w-0 space-y-1">
+            <h1 className="font-display text-3xl font-bold leading-snug tracking-tight">
+              {list.name}
+            </h1>
+            {list.description && (
+              <p className="max-w-xl text-sm text-muted">{list.description}</p>
+            )}
           </div>
+          <div className="flex flex-shrink-0 items-center gap-2">
+            {!list.isPublic && (
+              <span className="rounded-md border border-border-strong px-2 py-0.5 text-xs text-muted">
+                Private
+              </span>
+            )}
+            {isOwner && (
+              <ListEditForm
+                listId={list.id}
+                initialName={list.name}
+                initialDescription={list.description ?? ""}
+                initialIsPublic={list.isPublic}
+              />
+            )}
+          </div>
+        </div>
 
-          {/* Author */}
-          <div className="flex items-center gap-2">
-            <Avatar src={list.user.image} name={list.user.name} size={22} />
-            <Link
-              href={`/u/${list.user.username ?? list.user.name}`}
-              className="text-sm text-[var(--text-muted)] hover:text-white transition-colors"
-            >
-              {list.user.username ?? list.user.name}
-            </Link>
-            <span className="text-[var(--text-dim)] text-xs">·</span>
-            <span className="text-xs text-[var(--text-dim)]">
-              {list.items.length} {list.items.length === 1 ? "video" : "videos"}
-            </span>
-          </div>
+        {/* Author */}
+        <div className="flex items-center gap-2">
+          <Avatar src={list.user.image} name={list.user.name} size={22} />
+          <Link
+            href={`/u/${list.user.username ?? list.user.name}`}
+            className="text-sm text-muted transition-colors hover:text-foreground"
+          >
+            {list.user.username ?? list.user.name}
+          </Link>
+          <span className="text-xs text-faint">·</span>
+          <span className="text-xs text-faint">
+            {list.items.length} {list.items.length === 1 ? "video" : "videos"}
+          </span>
         </div>
       </div>
 
-      <div className="mx-auto max-w-4xl px-4 py-8 space-y-8">
+      <div className="mx-auto max-w-4xl space-y-8 px-4 pb-10">
         {/* Items */}
         {list.items.length === 0 ? (
-          <p className="text-[var(--text-dim)] text-sm text-center py-8">
+          <p className="py-8 text-center text-sm text-faint">
             No videos in this list yet.
           </p>
         ) : (
@@ -120,13 +120,13 @@ export default async function ListPage({
             {list.items.map((item, index) => (
               <div
                 key={item.id}
-                className="flex items-start gap-3 bg-[var(--bg-card)] border border-white/[0.06] rounded-lg p-3"
+                className="flex items-start gap-3 rounded-2xl border border-border bg-card p-3 transition-colors hover:border-border-strong"
               >
-                <span className="text-[var(--text-dim)] text-sm tabular-nums w-5 text-right flex-shrink-0 pt-0.5">
+                <span className="w-5 flex-shrink-0 pt-0.5 text-right text-sm tabular-nums text-faint">
                   {index + 1}
                 </span>
                 {item.video.thumbnailUrl ? (
-                  <Link href={`/video/${item.video.youtubeId}`} className="flex-shrink-0 block overflow-hidden rounded-md">
+                  <Link href={`/video/${item.video.youtubeId}`} className="block flex-shrink-0 overflow-hidden rounded-lg">
                     <Image
                       src={item.video.thumbnailUrl}
                       alt={item.video.title}
@@ -136,25 +136,25 @@ export default async function ListPage({
                     />
                   </Link>
                 ) : null}
-                <div className="flex-1 min-w-0">
+                <div className="min-w-0 flex-1">
                   <Link
                     href={`/video/${item.video.youtubeId}`}
-                    className="font-medium text-sm hover:text-[var(--accent-green)] transition-colors line-clamp-1"
+                    className="line-clamp-1 text-sm font-medium transition-colors hover:text-primary"
                   >
                     {item.video.title}
                   </Link>
-                  <div className="flex items-center gap-3 mt-0.5">
+                  <div className="mt-0.5 flex items-center gap-3">
                     {item.video.channelName && (
-                      <span className="text-xs text-[var(--text-dim)] truncate">
+                      <span className="truncate text-xs text-faint">
                         {item.video.channelName}
                       </span>
                     )}
                     {item.video.duration && (
-                      <span className="text-xs text-[var(--text-dim)]">{item.video.duration}</span>
+                      <span className="text-xs text-faint">{item.video.duration}</span>
                     )}
                   </div>
                   {item.note && (
-                    <p className="text-xs text-[var(--text-muted)] mt-1 italic">{item.note}</p>
+                    <p className="mt-1 text-xs italic text-muted">{item.note}</p>
                   )}
                 </div>
                 {isOwner && (

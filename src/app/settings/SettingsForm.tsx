@@ -3,7 +3,12 @@
 import Image from "next/image";
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { X } from "lucide-react";
 import Avatar from "@/components/Avatar";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 
 type Video = { youtubeId: string; title: string; thumbnailUrl: string | null; channelName?: string | null };
 
@@ -95,10 +100,10 @@ export default function SettingsForm({
   }
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-8">
       {/* ── Profile section ── */}
-      <section className="bg-[var(--bg-card)] border border-white/[0.06] rounded-lg p-6 space-y-5">
-        <h2 className="text-sm font-bold uppercase tracking-widest text-[var(--text-muted)]">
+      <section className="space-y-5 rounded-2xl border border-border bg-card p-6">
+        <h2 className="text-xs font-bold uppercase tracking-widest text-faint">
           Profile
         </h2>
 
@@ -107,72 +112,64 @@ export default function SettingsForm({
           <Avatar src={initial.image} name={initial.name} size={56} />
           <div>
             <p className="font-medium">{initial.name}</p>
-            <p className="text-xs text-[var(--text-dim)]">
+            <p className="text-xs text-faint">
               Profile picture is managed by Google
             </p>
           </div>
         </div>
 
         <form onSubmit={saveProfile} className="space-y-4">
-          <div className="space-y-1.5">
-            <label className="text-sm text-[var(--text-muted)]" htmlFor="username">
-              Username
-            </label>
-            <div className="flex items-center gap-2 bg-[var(--bg-secondary)] border border-white/10 rounded-lg px-4 py-2.5">
-              <span className="text-[var(--text-dim)] text-sm">@</span>
+          <div className="space-y-2">
+            <Label htmlFor="username">Username</Label>
+            <div className="flex h-10 items-center gap-2 rounded-lg border border-border-strong bg-inset px-3 transition-colors focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/25 hover:border-white/25">
+              <span className="text-sm text-faint">@</span>
               <input
                 id="username"
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ""))}
                 maxLength={30}
-                className="flex-1 bg-transparent text-sm focus:outline-none"
+                className="flex-1 bg-transparent text-sm text-foreground focus:outline-none"
               />
             </div>
-            <p className="text-xs text-[var(--text-dim)]">
+            <p className="text-xs text-faint">
               Lowercase letters, numbers, underscores. Max 30 characters.
             </p>
           </div>
 
-          <div className="space-y-1.5">
-            <label className="text-sm text-[var(--text-muted)]" htmlFor="bio">
-              Bio
-            </label>
-            <textarea
+          <div className="space-y-2">
+            <Label htmlFor="bio">Bio</Label>
+            <Textarea
               id="bio"
               value={bio}
               onChange={(e) => setBio(e.target.value)}
               rows={3}
               maxLength={200}
               placeholder="A few words about yourself…"
-              className="w-full bg-[var(--bg-secondary)] border border-white/10 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent-green)] resize-none placeholder:text-[var(--text-dim)]"
+              className="resize-none"
             />
-            <p className="text-xs text-[var(--text-dim)] text-right">{bio.length}/200</p>
+            <p className="text-right text-xs text-faint">{bio.length}/200</p>
           </div>
 
           {profileMsg && (
-            <p className={`text-sm ${profileMsg.ok ? "text-[var(--accent-green)]" : "text-red-400"}`}>
+            <p className={`text-sm ${profileMsg.ok ? "text-watched" : "text-primary"}`}>
               {profileMsg.text}
             </p>
           )}
 
-          <button
-            type="submit"
-            disabled={profileSaving}
-            className="px-5 py-2 rounded-lg bg-[var(--accent-green)] hover:bg-[var(--accent-green-dark)] text-black text-sm font-semibold transition-colors disabled:opacity-50"
-          >
+          <Button type="submit" disabled={profileSaving}>
             {profileSaving ? "Saving…" : "Save profile"}
-          </button>
+          </Button>
         </form>
       </section>
 
       {/* ── Favorite videos section ── */}
-      <section className="bg-[var(--bg-card)] border border-white/[0.06] rounded-lg p-6 space-y-5">
+      <section className="space-y-5 rounded-2xl border border-border bg-card p-6">
         <div>
-          <h2 className="text-sm font-bold uppercase tracking-widest text-[var(--text-muted)]">
+          <h2 className="text-xs font-bold uppercase tracking-widest text-faint">
             Favorite Videos
           </h2>
-          <p className="text-xs text-[var(--text-dim)] mt-1">
+          <p className="mt-1 text-xs text-faint">
             Pin up to 4 videos on your profile. Choose from videos you&apos;ve logged.
           </p>
         </div>
@@ -185,32 +182,32 @@ export default function SettingsForm({
               return (
                 <div key={i} className="space-y-1">
                   {fav ? (
-                    <div className="relative group">
+                    <div className="group relative">
                       {fav.thumbnailUrl ? (
                         <Image
                           src={fav.thumbnailUrl}
                           alt={fav.title}
                           width={144}
                           height={81}
-                          className="rounded-md w-full object-cover"
+                          className="w-full rounded-lg object-cover"
                         />
                       ) : (
-                        <div className="w-full aspect-video bg-[var(--bg-secondary)] rounded-md flex items-center justify-center text-[var(--text-dim)] text-xs">
+                        <div className="flex aspect-video w-full items-center justify-center rounded-lg bg-inset text-xs text-faint">
                           No thumb
                         </div>
                       )}
                       <button
                         type="button"
                         onClick={() => removeFavorite(fav.youtubeId)}
-                        className="absolute top-1 right-1 w-5 h-5 rounded-full bg-black/70 flex items-center justify-center text-white text-xs opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                        className="absolute right-1 top-1 flex size-5 items-center justify-center rounded-full bg-black/70 text-white opacity-0 transition-opacity hover:bg-primary group-hover:opacity-100"
                         aria-label="Remove"
                       >
-                        ×
+                        <X className="size-3" />
                       </button>
-                      <p className="text-xs text-[var(--text-dim)] line-clamp-1 mt-0.5">{fav.title}</p>
+                      <p className="mt-0.5 line-clamp-1 text-xs text-faint">{fav.title}</p>
                     </div>
                   ) : (
-                    <div className="w-full aspect-video bg-[var(--bg-secondary)] rounded-md border-2 border-dashed border-white/10 flex items-center justify-center text-[var(--text-dim)] text-xs">
+                    <div className="flex aspect-video w-full items-center justify-center rounded-lg border-2 border-dashed border-white/10 bg-inset text-xs text-faint">
                       {i + 1}
                     </div>
                   )}
@@ -222,23 +219,22 @@ export default function SettingsForm({
           {/* Search to add */}
           {favorites.length < 4 && (
             <div className="space-y-2">
-              <input
+              <Input
                 ref={searchRef}
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search your diary to add a favorite…"
-                className="w-full bg-[var(--bg-secondary)] border border-white/10 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent-green)] placeholder:text-[var(--text-dim)]"
               />
               {filtered.length > 0 && (
-                <div className="bg-[var(--bg-secondary)] border border-[var(--border)] rounded-lg overflow-hidden max-h-56 overflow-y-auto">
+                <div className="max-h-56 overflow-hidden overflow-y-auto rounded-xl border border-border bg-popover">
                   {filtered.slice(0, 10).map((v) => (
                     <button
                       key={v.youtubeId}
                       type="button"
                       onClick={() => addFavorite(v)}
                       disabled={!!favorites.find((f) => f.youtubeId === v.youtubeId)}
-                      className="w-full flex items-center gap-3 px-3 py-2 hover:bg-[var(--bg-card)] transition-colors text-left disabled:opacity-40"
+                      className="flex w-full items-center gap-3 px-3 py-2 text-left transition-colors hover:bg-white/[0.06] disabled:opacity-40"
                     >
                       {v.thumbnailUrl && (
                         <Image
@@ -246,13 +242,13 @@ export default function SettingsForm({
                           alt={v.title}
                           width={56}
                           height={32}
-                          className="rounded-md object-cover flex-shrink-0"
+                          className="flex-shrink-0 rounded-md object-cover"
                         />
                       )}
                       <div className="min-w-0">
-                        <p className="text-sm truncate">{v.title}</p>
+                        <p className="truncate text-sm">{v.title}</p>
                         {v.channelName && (
-                          <p className="text-xs text-[var(--text-dim)] truncate">{v.channelName}</p>
+                          <p className="truncate text-xs text-faint">{v.channelName}</p>
                         )}
                       </div>
                     </button>
@@ -263,18 +259,14 @@ export default function SettingsForm({
           )}
 
           {favMsg && (
-            <p className={`text-sm ${favMsg.ok ? "text-[var(--accent-green)]" : "text-red-400"}`}>
+            <p className={`text-sm ${favMsg.ok ? "text-watched" : "text-primary"}`}>
               {favMsg.text}
             </p>
           )}
 
-          <button
-            type="submit"
-            disabled={favSaving}
-            className="px-5 py-2 rounded-lg bg-[var(--accent-green)] hover:bg-[var(--accent-green-dark)] text-black text-sm font-semibold transition-colors disabled:opacity-50"
-          >
+          <Button type="submit" disabled={favSaving}>
             {favSaving ? "Saving…" : "Save favorites"}
-          </button>
+          </Button>
         </form>
       </section>
     </div>

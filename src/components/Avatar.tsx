@@ -3,9 +3,10 @@
 import Image from "next/image";
 import { useState } from "react";
 
+/* Muted, warm-leaning fallback palette that sits well on dark surfaces. */
 const PALETTE = [
-  "#3d5a80", "#5c4a7f", "#7f4a5c", "#3d7f5c",
-  "#7f6a3d", "#4a5c7f", "#5c7f4a", "#7f4a4a",
+  "#7f5a44", "#44607f", "#6a487f", "#3f7f68",
+  "#7f7144", "#4f487f", "#587f44", "#7f4452",
 ];
 
 function colorFor(name: string) {
@@ -29,7 +30,7 @@ export default function Avatar({
 }) {
   const [failed, setFailed] = useState(false);
   const ringClass = interactive
-    ? "hover:ring-2 hover:ring-[var(--accent-green)] transition-all duration-150"
+    ? "hover:ring-2 hover:ring-primary/60 transition-shadow duration-150"
     : "";
 
   if (src && !failed) {
@@ -40,21 +41,22 @@ export default function Avatar({
         width={size}
         height={size}
         onError={() => setFailed(true)}
-        className={`rounded-full flex-shrink-0 ${ringClass} ${className}`}
+        className={`rounded-full flex-shrink-0 object-cover ${ringClass} ${className}`}
+        style={{ width: size, height: size }}
       />
     );
   }
 
   const initial = name ? name[0].toUpperCase() : null;
-  const bg = name ? colorFor(name) : "var(--border)";
-  const fontSize = Math.max(9, Math.round(size * 0.38));
+  const bg = name ? colorFor(name) : "rgba(255,255,255,0.1)";
+  const fontSize = Math.max(9, Math.round(size * 0.4));
 
   return (
     <span
       role="img"
       aria-label={name ?? "avatar"}
       style={{ width: size, height: size, backgroundColor: bg, fontSize }}
-      className={`rounded-full flex items-center justify-center text-white font-semibold select-none flex-shrink-0 ${ringClass} ${className}`}
+      className={`rounded-full flex items-center justify-center text-white/90 font-semibold select-none flex-shrink-0 ${ringClass} ${className}`}
     >
       {initial ?? (
         <svg

@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Heart } from "lucide-react";
 import { useToast } from "@/components/Toast";
+import { cn } from "@/lib/utils";
 
 export default function LikeButton({
   diaryEntryId,
@@ -38,7 +40,6 @@ export default function LikeButton({
         const data = await res.json();
         setLiked(data.liked);
         setCount(data.count);
-        if (data.liked) toast("Liked ♥");
       } else {
         // Revert
         setLiked(liked);
@@ -60,13 +61,18 @@ export default function LikeButton({
       disabled={loading}
       aria-busy={loading}
       aria-label={liked ? "Unlike" : "Like"}
-      className={`flex items-center gap-1 text-xs transition-colors disabled:opacity-50 disabled:cursor-wait ${
-        loading ? "animate-pulse" : ""
-      } ${
-        liked ? "text-red-400 hover:text-red-300" : "text-[var(--text-dim)] hover:text-red-400"
-      }`}
+      className={cn(
+        "group inline-flex items-center gap-1.5 text-xs font-medium transition-colors disabled:cursor-wait disabled:opacity-50",
+        liked ? "text-primary" : "text-faint hover:text-primary"
+      )}
     >
-      <span aria-hidden="true">{liked ? "♥" : "♡"}</span>
+      <Heart
+        aria-hidden="true"
+        className={cn(
+          "size-3.5 transition-transform group-active:scale-125",
+          liked && "fill-current"
+        )}
+      />
       {count > 0 && <span>{count}</span>}
     </button>
   );

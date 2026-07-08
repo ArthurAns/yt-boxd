@@ -8,7 +8,7 @@ export default function Loading() {
         {Array.from({ length: 4 }, (_, i) => (
           <div
             key={i}
-            className="bg-[var(--bg-card)] border border-white/[0.06] rounded-lg p-4 space-y-3"
+            className="rounded-2xl border border-border bg-card p-4 space-y-3"
           >
             <div className="flex items-center gap-2">
               <Skeleton className="w-7 h-7 rounded-full" />

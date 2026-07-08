@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import Avatar from "@/components/Avatar";
 import FollowButton from "@/components/FollowButton";
+import PageHeader from "@/components/PageHeader";
 
 export const metadata: Metadata = { title: "Members" };
 
@@ -32,30 +33,27 @@ export default async function MembersPage() {
 
   return (
     <div className="min-h-screen">
-      <div className="bg-[var(--bg-secondary)] border-b border-[var(--border)]">
-        <div className="mx-auto max-w-5xl px-4 py-6">
-          <h1 className="text-2xl font-bold">Members</h1>
-          <p className="text-sm text-[var(--text-muted)] mt-1">
-            Most active watchers on YTBoxd
-          </p>
-        </div>
-      </div>
+      <PageHeader
+        title="Members"
+        subtitle="Most active watchers on ytboxd"
+        maxWidth="max-w-5xl"
+      />
 
-      <div className="mx-auto max-w-5xl px-4 py-8">
+      <div className="mx-auto max-w-5xl px-4 pb-10">
         {members.length === 0 ? (
-          <p className="text-center text-[var(--text-dim)] py-20 text-sm">
+          <p className="py-20 text-center text-sm text-faint">
             No members yet.
           </p>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3">
             {members.map((member) => (
               <div
                 key={member.id}
-                className="flex items-start gap-3 bg-[var(--bg-card)] border border-white/[0.06] rounded-lg p-4 hover:border-white/[0.14] transition-colors group"
+                className="group flex items-start gap-3 rounded-2xl border border-border bg-card p-4 transition-colors hover:border-border-strong"
               >
                 <Link
                   href={`/u/${member.username}`}
-                  className="flex items-start gap-3 min-w-0 flex-1"
+                  className="flex min-w-0 flex-1 items-start gap-3"
                 >
                   <Avatar
                     src={member.image}
@@ -64,25 +62,25 @@ export default async function MembersPage() {
                     interactive
                   />
                   <div className="min-w-0 flex-1">
-                    <p className="font-medium text-sm truncate group-hover:text-[var(--accent-green)] transition-colors">
+                    <p className="truncate text-sm font-semibold transition-colors group-hover:text-primary">
                       {member.name ?? member.username}
                     </p>
-                    <p className="text-xs text-[var(--text-muted)] truncate">
+                    <p className="truncate text-xs text-muted">
                       @{member.username}
                     </p>
                     {member.bio && (
-                      <p className="text-xs text-[var(--text-dim)] mt-1 line-clamp-2">
+                      <p className="mt-1 line-clamp-2 text-xs text-faint">
                         {member.bio}
                       </p>
                     )}
                   </div>
                 </Link>
-                <div className="flex flex-col items-end gap-2 flex-shrink-0">
+                <div className="flex flex-shrink-0 flex-col items-end gap-2">
                   <div className="text-right">
-                    <p className="text-sm font-bold text-white">
+                    <p className="font-display text-sm font-bold">
                       {member._count.diaryEntries}
                     </p>
-                    <p className="text-xs text-[var(--text-dim)]">videos</p>
+                    <p className="text-xs text-faint">videos</p>
                   </div>
                   {currentUserId && currentUserId !== member.id && (
                     <FollowButton

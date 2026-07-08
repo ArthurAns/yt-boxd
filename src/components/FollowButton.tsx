@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/Toast";
+import { cn } from "@/lib/utils";
 
 export default function FollowButton({
   targetUserId,
@@ -59,13 +60,14 @@ export default function FollowButton({
       onMouseLeave={() => setHovered(false)}
       disabled={loading}
       aria-busy={loading}
-      className={`text-xs font-semibold px-4 py-1.5 rounded-md border transition-colors min-w-[5.5rem] disabled:opacity-60 disabled:cursor-wait ${
+      className={cn(
+        "h-8 min-w-[5.5rem] rounded-lg px-4 text-xs font-semibold transition-colors disabled:cursor-wait disabled:opacity-60",
         following
           ? hovered && !loading
-            ? "border-red-500 text-red-400 bg-red-500/10"
-            : "border-[var(--accent-green)] text-[var(--accent-green)] bg-[var(--accent-green)]/10"
-          : "border-[var(--border)] text-[var(--text-muted)] hover:border-white/40 hover:text-white"
-      }`}
+            ? "border border-primary/60 bg-primary-soft text-primary"
+            : "border border-border-strong bg-card text-foreground"
+          : "bg-primary text-primary-foreground hover:bg-primary-hover"
+      )}
     >
       {label}
     </button>
