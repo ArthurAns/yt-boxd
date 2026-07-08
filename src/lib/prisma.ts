@@ -1,10 +1,18 @@
 import { PrismaClient } from "@/generated/prisma";
 import { PrismaNeon } from "@prisma/adapter-neon";
+import { PrismaPg } from "@prisma/adapter-pg";
+
+/** Neon's serverless driver only speaks to Neon's proxy — use the plain
+ *  pg adapter when pointing at a local/ordinary Postgres. */
+function createAdapter(connectionString: string) {
+  return /neon\.tech/.test(connectionString)
+    ? new PrismaNeon({ connectionString })
+    : new PrismaPg({ connectionString });
+}
 
 function createPrismaClient() {
-  const adapter = new PrismaNeon({ connectionString: process.env.DATABASE_URL! });
   return new PrismaClient({
-    adapter,
+    adapter: createAdapter(process.env.DATABASE_URL!),
     log: process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"],
   });
 }

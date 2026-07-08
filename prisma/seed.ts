@@ -11,6 +11,7 @@
 import "dotenv/config";
 import { PrismaClient } from "../src/generated/prisma/index.js";
 import { PrismaNeon } from "@prisma/adapter-neon";
+import { PrismaPg } from "@prisma/adapter-pg";
 import { neonConfig } from "@neondatabase/serverless";
 import ws from "ws";
 
@@ -19,7 +20,11 @@ import ws from "ws";
 // WebSocket constructor — it doesn't ship one by default.
 neonConfig.webSocketConstructor = ws;
 
-const adapter = new PrismaNeon({ connectionString: process.env.DATABASE_URL! });
+const connectionString = process.env.DATABASE_URL!;
+// Neon's serverless driver only works against Neon's proxy; use plain pg locally.
+const adapter = /neon\.tech/.test(connectionString)
+  ? new PrismaNeon({ connectionString })
+  : new PrismaPg({ connectionString });
 const prisma = new PrismaClient({ adapter } as ConstructorParameters<typeof PrismaClient>[0]);
 
 // ─── Video IDs from playlist PLxTwngSRhxH0Fm3GfYciNs1PY3VUz99m8 ─────────────
